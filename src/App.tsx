@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Pill, Search, Star, Heart, ShoppingBag, ArrowRight, ShieldCheck, 
-  MapPin, Clock, MessageSquare, AlertCircle, Calendar, FileText, CheckCircle, 
-  Trash2, User, ChevronRight, TrendingUp, Users, ClipboardList, Settings, 
+import {
+  Pill, Search, Star, Heart, ShoppingBag, ArrowRight, ShieldCheck,
+  MapPin, Clock, MessageSquare, AlertCircle, Calendar, FileText, CheckCircle,
+  Trash2, User, ChevronRight, TrendingUp, Users, ClipboardList, Settings,
   AlertTriangle, RefreshCw, Layers, PhoneCall, Video, Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -13,9 +13,9 @@ import DrugInteractionChecker from './components/DrugInteractionChecker';
 import PrescriptionUpload from './components/PrescriptionUpload';
 import VoiceSearch from './components/VoiceSearch';
 import { translations, Language } from './translations';
-import { 
-  UserRole, Medicine, MedicineCategory, Order, OrderStatus, 
-  Appointment, RefillSchedule, ActivityLog, PrescriptionOCR 
+import {
+  UserRole, Medicine, MedicineCategory, Order, OrderStatus,
+  Appointment, RefillSchedule, ActivityLog, PrescriptionOCR
 } from './types';
 
 export default function App() {
@@ -31,7 +31,7 @@ export default function App() {
 
   // Client Routing State
   const [currentView, setView] = useState<string>('home'); // 'home', 'shop', 'tele', 'blog', 'about', 'cart', 'dashboard-customer', 'dashboard-pharmacist', 'dashboard-admin'
-  
+
   // Data States
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [categories, setCategories] = useState<MedicineCategory[]>([]);
@@ -51,7 +51,7 @@ export default function App() {
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [deliveryAddress, setDeliveryAddress] = useState('No 45, Temple Road, Jaffna');
   const [paymentMethod, setPaymentMethod] = useState<'Cash on Delivery' | 'Card' | 'Mobile Wallet'>('Cash on Delivery');
-  
+
   // Active User Authentication
   const [currentUser, setCurrentUser] = useState<{ id: string; name: string; email: string; role: UserRole; allergies?: string[]; chronicConditions?: string[] } | null>({
     id: "u-1",
@@ -79,6 +79,25 @@ export default function App() {
   const [regConditions, setRegConditions] = useState('');
   const [regLicense, setRegLicense] = useState('');
   const [regAdminKey, setRegAdminKey] = useState('');
+
+  // Add Medicine Form State
+  const [showAddMedModal, setShowAddMedModal] = useState(false);
+  const [newMedName, setNewMedName] = useState('');
+  const [newMedGeneric, setNewMedGeneric] = useState('');
+  const [newMedCategory, setNewMedCategory] = useState('Antibiotics');
+  const [newMedPrice, setNewMedPrice] = useState<number>(150);
+  const [newMedStrength, setNewMedStrength] = useState('500mg');
+  const [newMedStock, setNewMedStock] = useState<number>(100);
+  const [newMedDesc, setNewMedDesc] = useState('');
+  const [newMedUsage, setNewMedUsage] = useState('');
+  const [newMedSideEffects, setNewMedSideEffects] = useState('');
+  const [newMedWarnings, setNewMedWarnings] = useState('Consult with a pharmacist.');
+  const [newMedRequiresRx, setNewMedRequiresRx] = useState(false);
+  const [newMedImage, setNewMedImage] = useState('https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&auto=format&fit=crop&q=60');
+
+  const [addMedError, setAddMedError] = useState('');
+  const [addMedSuccess, setAddMedSuccess] = useState('');
+  const [isSubmittingMed, setIsSubmittingMed] = useState(false);
 
   // Schedulers & Drafts
   const [draftOCR, setDraftOCR] = useState<PrescriptionOCR | null>(null);
@@ -142,7 +161,7 @@ export default function App() {
       if (data.user.role === UserRole.CUSTOMER) setView('dashboard-customer');
       else if (data.user.role === UserRole.PHARMACIST) setView('dashboard-pharmacist');
       else if (data.user.role === UserRole.ADMIN) setView('dashboard-admin');
-      
+
       loadData();
     } catch (err: any) {
       setAuthError(err.message);
@@ -201,7 +220,7 @@ export default function App() {
       if (data.user.role === UserRole.CUSTOMER) setView('dashboard-customer');
       else if (data.user.role === UserRole.PHARMACIST) setView('dashboard-pharmacist');
       else if (data.user.role === UserRole.ADMIN) setView('dashboard-admin');
-      
+
       loadData();
     } catch (err: any) {
       setAuthError(err.message);
@@ -212,6 +231,69 @@ export default function App() {
     setCurrentUser(null);
     setView('home');
     setCart([]);
+  };
+
+  // Add Medicine Form Handler
+  const handleAddMedicine = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAddMedError('');
+    setAddMedSuccess('');
+    setIsSubmittingMed(true);
+
+    try {
+      const payload = {
+        name: newMedName,
+        genericName: newMedGeneric,
+        category: newMedCategory,
+        price: Number(newMedPrice),
+        description: newMedDesc,
+        usageInstructions: newMedUsage,
+        sideEffects: newMedSideEffects ? newMedSideEffects.split(',').map(s => s.trim()).filter(Boolean) : [],
+        warnings: newMedWarnings,
+        strength: newMedStrength,
+        stock: Number(newMedStock),
+        image: newMedImage,
+        requiresPrescription: newMedRequiresRx
+      };
+
+      const response = await fetch('/api/medicines', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to add medicine');
+      }
+
+      setAddMedSuccess('Medicine added successfully to the Gishor medical store!');
+
+      // Reset form fields
+      setNewMedName('');
+      setNewMedGeneric('');
+      setNewMedPrice(150);
+      setNewMedStrength('500mg');
+      setNewMedStock(100);
+      setNewMedDesc('');
+      setNewMedUsage('');
+      setNewMedSideEffects('');
+      setNewMedWarnings('Consult with a pharmacist.');
+      setNewMedRequiresRx(false);
+
+      // Close modal after 1.5s
+      setTimeout(() => {
+        setShowAddMedModal(false);
+        setAddMedSuccess('');
+      }, 1500);
+
+      // Refresh data
+      loadData();
+    } catch (err: any) {
+      setAddMedError(err.message || 'Error creating medicine.');
+    } finally {
+      setIsSubmittingMed(false);
+    }
   };
 
   // Cart Operations
@@ -247,7 +329,7 @@ export default function App() {
     const orderPayload = {
       customerId: currentUser.id,
       customerName: currentUser.name,
-      items: isConfirmingDraft && ocrPayload 
+      items: isConfirmingDraft && ocrPayload
         ? [{ medicineId: "med-2", name: ocrPayload.medicineName, quantity: 1, price: 1200, strength: ocrPayload.strength }]
         : cart,
       paymentMethod,
@@ -267,7 +349,7 @@ export default function App() {
       if (!response.ok) throw new Error("Order creation issue");
 
       const createdOrder = await response.json();
-      
+
       // Clear cart
       if (!isConfirmingDraft) setCart([]);
       setDraftOCR(null);
@@ -349,16 +431,15 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col font-sans transition-all duration-300 ${
-      accessibility.highContrast ? 'bg-black text-white' : 'bg-[#F5FAFF]'
-    }`}>
+    <div className={`min-h-screen flex flex-col font-sans transition-all duration-300 ${accessibility.highContrast ? 'bg-black text-white' : 'bg-[#F5FAFF]'
+      }`}>
       {/* Dynamic Banner alerts */}
       <div className="bg-[#22A06B] text-white text-[11px] font-bold text-center py-1 flex items-center justify-center space-x-2">
         <ShieldCheck className="w-4 h-4 text-emerald-300 shrink-0" />
         <span>Jaffna's certified clinical grade healthcare provider. Pharmacist-in-charge: Dr. K. Gnanapragasam.</span>
       </div>
 
-      <Header 
+      <Header
         currentLang={currentLang}
         setLang={setLang}
         accessibility={accessibility}
@@ -373,7 +454,7 @@ export default function App() {
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
-        
+
         {/* ELDERLY FRIENDLY BANNER MODE */}
         {accessibility.elderlyMode && (
           <div className="bg-amber-100 border-2 border-amber-400 text-amber-900 rounded-2xl p-5 mb-6 flex items-center space-x-4">
@@ -386,10 +467,10 @@ export default function App() {
         )}
 
         <AnimatePresence mode="wait">
-          
+
           {/* HOME VIEW */}
           {currentView === 'home' && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
@@ -402,16 +483,15 @@ export default function App() {
                   <span className="bg-[#F5FAFF] text-[#0F6CBD] font-bold text-xs uppercase px-3.5 py-1.5 rounded-full inline-block self-start dark:bg-zinc-900 dark:text-blue-300">
                     🏥 Certified Sri Lankan Pharmacy
                   </span>
-                  <h2 className={`font-bold tracking-tight text-gray-900 leading-tight dark:text-white ${
-                    accessibility.largeText ? 'text-4xl' : 'text-3xl lg:text-4xl'
-                  }`}>
+                  <h2 className={`font-bold tracking-tight text-gray-900 leading-tight dark:text-white ${accessibility.largeText ? 'text-4xl' : 'text-3xl lg:text-4xl'
+                    }`}>
                     Your Trusted clinical <br />
                     Pharmacy platform in <span className="text-[#0F6CBD]">Jaffna</span>
                   </h2>
                   <p className="text-sm text-gray-500 leading-relaxed max-w-lg">
                     Order Over-The-Counter medicines safely, upload prescriptions for vision-driven AI order drafting, check compound safety, and secure calendar video consultations with licensed pharmacists.
                   </p>
-                  
+
                   {/* Global search input */}
                   <div className="bg-gray-50 border border-gray-200 dark:bg-zinc-900 dark:border-zinc-800 rounded-2xl p-2.5 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 max-w-xl">
                     <div className="flex-1 flex items-center space-x-2 px-2.5">
@@ -426,13 +506,13 @@ export default function App() {
                       />
                     </div>
                     <div className="flex space-x-2">
-                      <VoiceSearch 
-                        currentLang={currentLang} 
-                        accessibility={accessibility} 
+                      <VoiceSearch
+                        currentLang={currentLang}
+                        accessibility={accessibility}
                         onSpeechResult={(word) => {
                           setSearchQuery(word);
                           setView('shop');
-                        }} 
+                        }}
                       />
                       <button
                         onClick={() => setView('shop')}
@@ -485,7 +565,7 @@ export default function App() {
 
               {/* Main functional split: Chat assistant + Prescription vision upload */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
+
                 {/* AI Assistant Chat column */}
                 <div className="lg:col-span-7">
                   <AIAssistant currentLang={currentLang} accessibility={accessibility} />
@@ -493,10 +573,10 @@ export default function App() {
 
                 {/* Prescription visión ocr column */}
                 <div className="lg:col-span-5 space-y-6">
-                  <PrescriptionUpload 
-                    currentLang={currentLang} 
-                    accessibility={accessibility} 
-                    onOrderDraftCreated={handleOCRReceived} 
+                  <PrescriptionUpload
+                    currentLang={currentLang}
+                    accessibility={accessibility}
+                    onOrderDraftCreated={handleOCRReceived}
                   />
 
                   {/* Quick Drug interaction checker widget */}
@@ -546,7 +626,7 @@ export default function App() {
 
           {/* SHOP VIEW */}
           {currentView === 'shop' && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -560,18 +640,17 @@ export default function App() {
                   </h2>
                   <p className="text-xs text-gray-400">Sri Lankan clinical grade OTC and prescription medicines</p>
                 </div>
-                
+
                 {/* Horizontal Filter */}
                 <div className="flex flex-wrap gap-2">
                   {['All', ...categories.map(c => c.name)].map(cat => (
                     <button
                       key={cat}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition ${
-                        selectedCategory === cat
-                          ? 'bg-[#0F6CBD] text-white shadow-xs'
-                          : 'bg-white border border-gray-200 text-gray-600 dark:bg-zinc-900 dark:border-zinc-800'
-                      }`}
+                      className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition ${selectedCategory === cat
+                        ? 'bg-[#0F6CBD] text-white shadow-xs'
+                        : 'bg-white border border-gray-200 text-gray-600 dark:bg-zinc-900 dark:border-zinc-800'
+                        }`}
                     >
                       {cat}
                     </button>
@@ -622,7 +701,7 @@ export default function App() {
                         <span className="block text-[10px] text-gray-400">STRENGTH</span>
                         <span className="font-bold text-gray-700 dark:text-gray-300">{med.strength}</span>
                       </div>
-                      
+
                       <div className="flex space-x-2">
                         <button
                           onClick={() => setSelectedMed(med)}
@@ -647,7 +726,7 @@ export default function App() {
 
           {/* TELEPHARMACY VIEW */}
           {currentView === 'tele' && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -744,7 +823,7 @@ export default function App() {
 
           {/* BLOG VIEW */}
           {currentView === 'blog' && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -790,7 +869,7 @@ export default function App() {
 
           {/* ABOUT VIEW */}
           {currentView === 'about' && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -818,7 +897,7 @@ export default function App() {
 
           {/* CART VIEW */}
           {currentView === 'cart' && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -903,11 +982,10 @@ export default function App() {
                                 key={m}
                                 type="button"
                                 onClick={() => setPaymentMethod(m)}
-                                className={`p-2.5 text-xs rounded-xl font-bold border text-left transition ${
-                                  paymentMethod === m 
-                                    ? 'border-[#0F6CBD] bg-[#F5FAFF] text-[#0F6CBD] dark:bg-zinc-900' 
-                                    : 'border-gray-200 text-gray-600'
-                                }`}
+                                className={`p-2.5 text-xs rounded-xl font-bold border text-left transition ${paymentMethod === m
+                                  ? 'border-[#0F6CBD] bg-[#F5FAFF] text-[#0F6CBD] dark:bg-zinc-900'
+                                  : 'border-gray-200 text-gray-600'
+                                  }`}
                               >
                                 {m}
                               </button>
@@ -963,7 +1041,7 @@ export default function App() {
 
           {/* CUSTOMER DASHBOARD */}
           {currentView === 'dashboard-customer' && currentUser && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -1042,11 +1120,10 @@ export default function App() {
                             <h4 className="font-bold text-xs text-gray-700 dark:text-white mt-0.5">Total: LKR {order.total}</h4>
                             <p className="text-[10px] text-gray-400">Created: {new Date(order.createdAt).toLocaleDateString()}</p>
                           </div>
-                          <span className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-full ${
-                            order.status === OrderStatus.COMPLETED
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-amber-100 text-amber-800'
-                          }`}>
+                          <span className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-full ${order.status === OrderStatus.COMPLETED
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-amber-100 text-amber-800'
+                            }`}>
                             {order.status}
                           </span>
                         </div>
@@ -1060,18 +1137,29 @@ export default function App() {
 
           {/* PHARMACIST DASHBOARD */}
           {currentView === 'dashboard-pharmacist' && currentUser && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="space-y-6"
               id="view-dashboard-pharmacist"
             >
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                   <h2 className="font-bold text-gray-900 dark:text-white text-2xl">Licensed Pharmacist Dashboard</h2>
                   <p className="text-xs text-gray-400">Dr. K. Gnanapragasam • SLMC-9842</p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNewMedCategory(categories[0]?.name || 'Antibiotics');
+                    setShowAddMedModal(true);
+                  }}
+                  className="bg-[#22A06B] hover:bg-[#1c8055] text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-xs flex items-center space-x-1"
+                >
+                  <Pill className="w-4 h-4" />
+                  <span>+ Add New Medicine</span>
+                </button>
               </div>
 
               {/* Action column: Review prescriptions */}
@@ -1135,18 +1223,29 @@ export default function App() {
 
           {/* ADMIN DASHBOARD */}
           {currentView === 'dashboard-admin' && currentUser && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="space-y-6"
               id="view-dashboard-admin"
             >
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                   <h2 className="font-bold text-gray-900 dark:text-white text-2xl">Admin Central Command</h2>
                   <p className="text-xs text-gray-400">Gishor Pharmacy Corporate Control</p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNewMedCategory(categories[0]?.name || 'Antibiotics');
+                    setShowAddMedModal(true);
+                  }}
+                  className="bg-[#0F6CBD] hover:bg-[#0c599c] text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-xs flex items-center space-x-1"
+                >
+                  <Pill className="w-4 h-4" />
+                  <span>+ Add New Medicine</span>
+                </button>
               </div>
 
               {/* Stats bento panel */}
@@ -1195,9 +1294,8 @@ export default function App() {
       {/* LOGIN & SIGNUP MODAL */}
       {showAuthModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-[9999]">
-          <div className={`w-full ${authMode === 'register' ? 'max-w-md' : 'max-w-sm'} rounded-3xl p-6 shadow-xl border max-h-[90vh] overflow-y-auto ${
-            accessibility.highContrast ? 'bg-black text-white border-yellow-400' : 'bg-white text-gray-800 border-gray-100 dark:bg-zinc-950 dark:border-zinc-900'
-          }`}>
+          <div className={`w-full ${authMode === 'register' ? 'max-w-md' : 'max-w-sm'} rounded-3xl p-6 shadow-xl border max-h-[90vh] overflow-y-auto ${accessibility.highContrast ? 'bg-black text-white border-yellow-400' : 'bg-white text-gray-800 border-gray-100 dark:bg-zinc-950 dark:border-zinc-900'
+            }`}>
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className="font-bold text-lg text-gray-900 dark:text-white">Gishor Pharmacy Portal</h3>
@@ -1213,22 +1311,20 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => { setAuthMode('login'); setAuthError(''); }}
-                className={`flex-1 pb-2.5 text-center font-bold text-xs transition-all border-b-2 ${
-                  authMode === 'login' 
-                    ? 'border-[#0F6CBD] text-[#0F6CBD]' 
-                    : 'border-transparent text-gray-400 hover:text-gray-600'
-                }`}
+                className={`flex-1 pb-2.5 text-center font-bold text-xs transition-all border-b-2 ${authMode === 'login'
+                  ? 'border-[#0F6CBD] text-[#0F6CBD]'
+                  : 'border-transparent text-gray-400 hover:text-gray-600'
+                  }`}
               >
                 Sign In
               </button>
               <button
                 type="button"
                 onClick={() => { setAuthMode('register'); setAuthError(''); }}
-                className={`flex-1 pb-2.5 text-center font-bold text-xs transition-all border-b-2 ${
-                  authMode === 'register' 
-                    ? 'border-[#0F6CBD] text-[#0F6CBD]' 
-                    : 'border-transparent text-gray-400 hover:text-gray-600'
-                }`}
+                className={`flex-1 pb-2.5 text-center font-bold text-xs transition-all border-b-2 ${authMode === 'register'
+                  ? 'border-[#0F6CBD] text-[#0F6CBD]'
+                  : 'border-transparent text-gray-400 hover:text-gray-600'
+                  }`}
               >
                 Create Account
               </button>
@@ -1243,11 +1339,10 @@ export default function App() {
                       key={role}
                       type="button"
                       onClick={() => setAuthRole(role as UserRole)}
-                      className={`py-2 text-[10px] font-bold rounded-xl border text-center transition ${
-                        authRole === role 
-                          ? 'border-[#0F6CBD] bg-[#F5FAFF] text-[#0F6CBD] dark:bg-zinc-900 dark:text-sky-400' 
-                          : 'border-gray-200 text-gray-500 hover:bg-gray-50 dark:border-zinc-800 dark:hover:bg-zinc-900'
-                      }`}
+                      className={`py-2 text-[10px] font-bold rounded-xl border text-center transition ${authRole === role
+                        ? 'border-[#0F6CBD] bg-[#F5FAFF] text-[#0F6CBD] dark:bg-zinc-900 dark:text-sky-400'
+                        : 'border-gray-200 text-gray-500 hover:bg-gray-50 dark:border-zinc-800 dark:hover:bg-zinc-900'
+                        }`}
                     >
                       {role}
                     </button>
@@ -1412,12 +1507,257 @@ export default function App() {
         </div>
       )}
 
+      {/* ADD MEDICINE MODAL */}
+      {showAddMedModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-[9999]">
+          <div className={`w-full max-w-lg rounded-3xl p-6 shadow-xl border max-h-[90vh] overflow-y-auto ${accessibility.highContrast ? 'bg-black text-white border-yellow-400' : 'bg-white text-gray-800 border-gray-100 dark:bg-zinc-950 dark:border-zinc-900'
+            }`}>
+            <div className="flex justify-between items-start mb-4 border-b pb-3 border-gray-100 dark:border-zinc-900">
+              <div>
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Add Medicine to Store</h3>
+                <p className="text-xs text-gray-400">Introduce a new product to Gishor Pharmacy's catalog</p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowAddMedModal(false);
+                  setAddMedError('');
+                  setAddMedSuccess('');
+                }}
+                className="p-1 hover:bg-gray-100 rounded-lg dark:hover:bg-zinc-800 text-gray-400"
+              >
+                <span>✕</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleAddMedicine} className="space-y-4 text-xs">
+
+              {addMedSuccess && (
+                <div className="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 font-bold p-3 rounded-xl border border-emerald-200 dark:border-emerald-900 text-center">
+                  {addMedSuccess}
+                </div>
+              )}
+
+              {addMedError && (
+                <div className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 font-bold p-3 rounded-xl border border-red-200 dark:border-red-900 text-center">
+                  {addMedError}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-gray-400 font-semibold mb-1">Medicine Name <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
+                    required
+                    value={newMedName}
+                    onChange={e => setNewMedName(e.target.value)}
+                    placeholder="e.g., Amoxil"
+                    className="w-full bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 border rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-400 font-semibold mb-1">Generic / Chemical Name <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
+                    required
+                    value={newMedGeneric}
+                    onChange={e => setNewMedGeneric(e.target.value)}
+                    placeholder="e.g., Amoxicillin"
+                    className="w-full bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 border rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-gray-400 font-semibold mb-1">Category <span className="text-red-500">*</span></label>
+                  <select
+                    value={newMedCategory}
+                    onChange={e => setNewMedCategory(e.target.value)}
+                    className="w-full bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 border rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD]"
+                  >
+                    {categories.map(c => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))}
+                    {!categories.some(c => c.name === 'Antibiotics') && <option value="Antibiotics">Antibiotics</option>}
+                    {!categories.some(c => c.name === 'Painkillers') && <option value="Painkillers">Painkillers</option>}
+                    {!categories.some(c => c.name === 'Cardiology') && <option value="Cardiology">Cardiology</option>}
+                    {!categories.some(c => c.name === 'Diabetic') && <option value="Diabetic">Diabetic</option>}
+                    {!categories.some(c => c.name === 'Vitamins') && <option value="Vitamins">Vitamins</option>}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-gray-400 font-semibold mb-1">Price (LKR) <span className="text-red-500">*</span></label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={newMedPrice}
+                    onChange={e => setNewMedPrice(Number(e.target.value))}
+                    placeholder="e.g., 250"
+                    className="w-full bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 border rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-400 font-semibold mb-1">Strength <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
+                    required
+                    value={newMedStrength}
+                    onChange={e => setNewMedStrength(e.target.value)}
+                    placeholder="e.g., 500mg or 250mg/5ml"
+                    className="w-full bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 border rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-gray-400 font-semibold mb-1">Initial Stock <span className="text-red-500">*</span></label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={newMedStock}
+                    onChange={e => setNewMedStock(Number(e.target.value))}
+                    placeholder="e.g., 100"
+                    className="w-full bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 border rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD]"
+                  />
+                </div>
+
+                <div className="flex items-center pt-5">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={newMedRequiresRx}
+                      onChange={e => setNewMedRequiresRx(e.target.checked)}
+                      className="w-4 h-4 rounded text-[#0F6CBD] focus:ring-[#0F6CBD] dark:bg-zinc-900 dark:border-zinc-800"
+                    />
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Requires Prescription (Rx Required)</span>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-gray-400 font-semibold mb-1">Short Description <span className="text-red-500">*</span></label>
+                <textarea
+                  required
+                  rows={2}
+                  value={newMedDesc}
+                  onChange={e => setNewMedDesc(e.target.value)}
+                  placeholder="e.g., Broad-spectrum bactericidal penicillin antibiotic for bacterial infections."
+                  className="w-full bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 border rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD] resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-400 font-semibold mb-1">Clinical Usage Instructions <span className="text-red-500">*</span></label>
+                <textarea
+                  required
+                  rows={2}
+                  value={newMedUsage}
+                  onChange={e => setNewMedUsage(e.target.value)}
+                  placeholder="e.g., Take 1 tablet every 8 hours with or after meals. Complete the course."
+                  className="w-full bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 border rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD] resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-400 font-semibold mb-1">Contraindications &amp; Warnings</label>
+                <input
+                  type="text"
+                  value={newMedWarnings}
+                  onChange={e => setNewMedWarnings(e.target.value)}
+                  placeholder="e.g., Avoid if allergic to penicillin. Seek advice on pregnancy."
+                  className="w-full bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 border rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-400 font-semibold mb-1">Known Side Effects (Comma-separated)</label>
+                <input
+                  type="text"
+                  value={newMedSideEffects}
+                  onChange={e => setNewMedSideEffects(e.target.value)}
+                  placeholder="e.g., Nausea, Diarrhea, Skin rash"
+                  className="w-full bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 border rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-400 font-semibold mb-1">Medicine Image URL</label>
+                <input
+                  type="url"
+                  value={newMedImage}
+                  onChange={e => setNewMedImage(e.target.value)}
+                  className="w-full bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 border rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD]"
+                />
+                <div className="mt-2 space-y-1">
+                  <span className="text-[10px] text-gray-400 block font-bold">PRESET THEMES FOR EASY SELECTION:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { label: "💊 Tablets Pack", url: "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&auto=format&fit=crop&q=60" },
+                      { label: "🧪 Syrup Liquid", url: "https://images.unsplash.com/photo-1550572017-edd951b55104?w=400&auto=format&fit=crop&q=60" },
+                      { label: "🫙 Capsules Container", url: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&auto=format&fit=crop&q=60" },
+                      { label: "🌬️ Asthma Inhaler", url: "https://images.unsplash.com/photo-1607619056574-7b8d304f3b24?w=400&auto=format&fit=crop&q=60" }
+                    ].map(preset => (
+                      <button
+                        key={preset.label}
+                        type="button"
+                        onClick={() => setNewMedImage(preset.url)}
+                        className={`text-[10px] px-2 py-1 rounded-lg border transition ${newMedImage === preset.url
+                          ? 'bg-[#0F6CBD] border-[#0F6CBD] text-white'
+                          : 'bg-white dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-600 hover:bg-gray-50'
+                          }`}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t border-gray-100 dark:border-zinc-900">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddMedModal(false);
+                    setAddMedError('');
+                    setAddMedSuccess('');
+                  }}
+                  className="flex-1 py-2 border text-gray-500 font-semibold rounded-xl text-center hover:bg-gray-50 dark:border-zinc-800 dark:hover:bg-zinc-900 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingMed}
+                  className="flex-1 py-2 bg-[#0F6CBD] hover:bg-[#0c599c] text-white font-bold rounded-xl shadow-xs transition flex items-center justify-center space-x-1 disabled:opacity-50"
+                >
+                  {isSubmittingMed ? (
+                    <span>Saving...</span>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      <span>Save Medicine</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* DETAIL MODAL */}
       {selectedMed && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-[9999]">
-          <div className={`w-full max-w-lg rounded-3xl p-6 shadow-xl border max-h-[90vh] overflow-y-auto ${
-            accessibility.highContrast ? 'bg-black text-white border-yellow-400' : 'bg-white text-gray-800 border-gray-100'
-          }`}>
+          <div className={`w-full max-w-lg rounded-3xl p-6 shadow-xl border max-h-[90vh] overflow-y-auto ${accessibility.highContrast ? 'bg-black text-white border-yellow-400' : 'bg-white text-gray-800 border-gray-100'
+            }`}>
             <div className="flex justify-between items-start mb-4 border-b pb-3">
               <div>
                 <h3 className="font-bold text-base text-gray-900 dark:text-white">{selectedMed.name}</h3>
