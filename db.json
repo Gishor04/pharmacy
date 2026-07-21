@@ -1,0 +1,66 @@
+{
+  "users": [
+    {
+      "id": "u-1784634647621",
+      "name": "Gishor Rajendra SLIIT",
+      "email": "gishor78@gmail.com",
+      "role": "Customer",
+      "password": "12345@Gi",
+      "phone": "+94768445828",
+      "address": "Neervely",
+      "city": "Jaffna",
+      "allergies": [
+        "Asprin"
+      ],
+      "chronicConditions": [
+        "Diabets"
+      ],
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=60",
+      "createdAt": "2026-07-21T11:50:47.621Z"
+    },
+    {
+      "id": "u-1784635808907",
+      "name": "Gishor Rajendra SLIIT",
+      "email": "gishor200@gmail.com",
+      "role": "Customer",
+      "password": "12345@Gi",
+      "phone": "+94768445828",
+      "address": "Neervely",
+      "city": "Jaffna",
+      "allergies": [
+        "Asprin"
+      ],
+      "chronicConditions": [
+        "Diabets"
+      ],
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&auto=format&fit=crop&q=60",
+      "createdAt": "2026-07-21T12:10:08.907Z"
+    }
+  ],
+  "categories": [],
+  "products": [],
+  "orders": [],
+  "appointments": [],
+  "refillSchedules": [],
+  "activityLogs": [
+    {
+      "id": "log-1784634647622",
+      "userId": "u-1784634647621",
+      "userName": "Gishor Rajendra SLIIT",
+      "userRole": "Customer",
+      "action": "User Registered",
+      "details": "New Customer profile registered successfully.",
+      "timestamp": "2026-07-21T11:50:47.622Z"
+    },
+    {
+      "id": "log-1784635808907",
+      "userId": "u-1784635808907",
+      "userName": "Gishor Rajendra SLIIT",
+      "userRole": "Customer",
+      "action": "User Registered",
+      "details": "New Customer profile registered successfully.",
+      "timestamp": "2026-07-21T12:10:08.907Z"
+    }
+  ],
+  "blogs": []
+}

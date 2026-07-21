@@ -1,0 +1,6 @@
+{
+  "name": "Gishor Pharmacy",
+  "description": "A premium modern AI-powered pharmacy e-commerce platform for families, elderly, and chronic illness patients in Jaffna, Sri Lanka.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
