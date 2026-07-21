@@ -13,10 +13,6 @@
             "destination": "/api/$1"
         },
         {
-            "source": "/(.*\\.(js|css|png|jpg|jpeg|svg|ico|woff2?))",
-            "destination": "/$1"
-        },
-        {
             "source": "/(.*)",
             "destination": "/index.html"
         }
