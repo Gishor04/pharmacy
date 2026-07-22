@@ -1,7 +1,6 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI, Type } from '@google/genai';
 import dotenv from 'dotenv';
 import { UserRole, OrderStatus } from './src/types';
@@ -878,11 +877,15 @@ Ensure the JSON is strictly valid, with no markdown code fences or backticks. On
 
 // ----------------- VITE DEVELOPMENT & PRODUCTION SERVERS -----------------
 
+// ----------------- VITE DEVELOPMENT & PRODUCTION SERVERS -----------------
+
+// For local development or non-Vercel production environments
 async function startServer() {
   // Establish database connection with dynamic fallback support
   await connectMongoDB();
 
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
@@ -903,4 +906,22 @@ async function startServer() {
   });
 }
 
-startServer();
+// Check if running on Vercel
+const isVercel = process.env.VERCEL === "1";
+
+if (!isVercel) {
+  startServer();
+} else {
+  // On Vercel, we need to ensure the database is connected when handling requests
+  // We can attach a middleware to lazily connect
+  let dbConnected = false;
+  app.use(async (req, res, next) => {
+    if (!dbConnected) {
+      await connectMongoDB();
+      dbConnected = true;
+    }
+    next();
+  });
+}
+
+export default app;
