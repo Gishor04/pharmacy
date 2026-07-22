@@ -235,18 +235,63 @@ export function getMongoStatus() {
   return isMongoConnected;
 }
 
+import { INITIAL_MEDICINES, INITIAL_CATEGORIES, INITIAL_PHARMACISTS, INITIAL_DOCTORS, INITIAL_BLOGS, INITIAL_DRUG_INTERACTIONS, INITIAL_SETTINGS } from './seedData';
+
 // Fallback Database Helpers
+let memoryDb: any = null;
+
 function getLocalDB() {
+  const isVercel = process.env.VERCEL === "1";
+  
+  if (isVercel) {
+    if (!memoryDb) {
+      memoryDb = {
+        medicines: INITIAL_MEDICINES,
+        categories: INITIAL_CATEGORIES,
+        pharmacists: INITIAL_PHARMACISTS,
+        doctors: INITIAL_DOCTORS,
+        blogs: INITIAL_BLOGS,
+        interactions: INITIAL_DRUG_INTERACTIONS,
+        users: [],
+        orders: [],
+        appointments: [],
+        refillSchedules: [],
+        activityLogs: [],
+        settings: INITIAL_SETTINGS
+      };
+    }
+    return memoryDb;
+  }
+
   try {
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
     return JSON.parse(raw);
   } catch (err) {
-    console.error("Unable to read local db.json fallback database:", err);
-    return null;
+    console.error("Unable to read local db.json fallback database. Using seed data instead:", err);
+    return {
+      medicines: INITIAL_MEDICINES,
+      categories: INITIAL_CATEGORIES,
+      pharmacists: INITIAL_PHARMACISTS,
+      doctors: INITIAL_DOCTORS,
+      blogs: INITIAL_BLOGS,
+      interactions: INITIAL_DRUG_INTERACTIONS,
+      users: [],
+      orders: [],
+      appointments: [],
+      refillSchedules: [],
+      activityLogs: [],
+      settings: INITIAL_SETTINGS
+    };
   }
 }
 
 function saveLocalDB(data: any) {
+  const isVercel = process.env.VERCEL === "1";
+  if (isVercel) {
+    memoryDb = data; // Keep in memory on Vercel
+    return;
+  }
+  
   try {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
   } catch (err) {
