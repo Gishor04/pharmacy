@@ -60,7 +60,15 @@ export const translations = {
     elderlyMode: "Elderly Mode",
     tamil: "தமிழ்",
     sinhala: "සිංහල",
-    english: "English"
+    navTrackOrder: "Track Order",
+    navOffers: "Offers",
+    refundPolicyTitle: "Refund Policy",
+    deliveryPolicyTitle: "Delivery Policy",
+    faqTitle: "Frequently Asked Questions",
+    careersTitle: "Careers at Gishor Pharmacy",
+    contactTitle: "Contact Us",
+    offersTitle: "Exclusive Offers",
+    trackOrderTitle: "Track Your Order"
   },
   ta: {
     brandName: "கிஷோர் பார்மசி",
@@ -121,7 +129,16 @@ export const translations = {
     elderlyMode: "முதியோர் முறை",
     tamil: "தமிழ்",
     sinhala: "සිංහල",
-    english: "English"
+    english: "English",
+    navTrackOrder: "ஆர்டர் கண்காணிப்பு",
+    navOffers: "சலுகைகள்",
+    refundPolicyTitle: "பணத்திரும்ப கொள்கை",
+    deliveryPolicyTitle: "விநியோக கொள்கை",
+    faqTitle: "அடிக்கடி கேட்கப்படும் கேள்விகள்",
+    careersTitle: "கிஷோர் பார்மசியில் வேலை வாய்ப்புகள்",
+    contactTitle: "எங்களை தொடர்பு கொள்ளுங்கள்",
+    offersTitle: "பிரத்யேக சலுகைகள்",
+    trackOrderTitle: "உங்கள் ஆர்டரை கண்காணிக்கவும்"
   },
   si: {
     brandName: "ගිෂෝර් ෆාමසි",
@@ -180,8 +197,17 @@ export const translations = {
     contrastMode: "අධික වෙනස",
     textSizeMode: "විශාල අකුරු ප්‍රමාණය",
     elderlyMode: "වැඩිහිටි ප්‍රකාරය",
-    tamil: "தமிழ்",
+    tamil: "தமிழ්",
     sinhala: "සිංහල",
-    english: "English"
+    english: "English",
+    navTrackOrder: "ඇණවුම සොයන්න",
+    navOffers: "දීමනා",
+    refundPolicyTitle: "මුදල් ආපසු ප්‍රතිපත්තිය",
+    deliveryPolicyTitle: "බෙදා හැරීමේ ප්‍රතිපත්තිය",
+    faqTitle: "නිතර අසන ප්‍රශ්න",
+    careersTitle: "ගිෂෝර් ෆාමසි රැකියා",
+    contactTitle: "අප අමතන්න",
+    offersTitle: "විශේෂ දීමනා",
+    trackOrderTitle: "ඔබේ ඇණවුම සොයන්න"
   }
 };

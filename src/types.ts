@@ -31,6 +31,9 @@ export interface Medicine {
   strength: string; // e.g., "500mg"
   stock: number;
   image: string;
+  images?: string[]; // Multiple angle views
+  manufacturer?: string;
+  manufacturerLogo?: string;
   requiresPrescription: boolean;
   reviewsCount: number;
   rating: number;

@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+@layer utilities {
+  /* Accessibility Focus Outline Styles */
+  *:focus-visible {
+    outline: 2px solid #0F6CBD !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Custom Image Zoom & Gallery Styles */
+.image-zoom-container {
+  overflow: hidden;
+  position: relative;
+  cursor: zoom-in;
+}
+
+.image-zoom-container img {
+  transition: transform 0.3s ease;
+}
+
+.image-zoom-container:hover img {
+  transform: scale(1.5);
+}
+
+/* Skip Link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #0F6CBD;
+  color: white;
+  padding: 8px 16px;
+  z-index: 100;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}

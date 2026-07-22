@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import {
   Pill, Search, Star, Heart, ShoppingBag, ArrowRight, ShieldCheck,
   MapPin, Clock, MessageSquare, AlertCircle, Calendar, FileText, CheckCircle,
   Trash2, User, ChevronRight, TrendingUp, Users, ClipboardList, Settings,
-  AlertTriangle, RefreshCw, Layers, PhoneCall, Video, Check
+  AlertTriangle, RefreshCw, Layers, PhoneCall, Video, Check, Truck, HelpCircle,
+  Briefcase, Mail, Tag, Package, CheckSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import AIAssistant from './components/AIAssistant';
-import DrugInteractionChecker from './components/DrugInteractionChecker';
-import PrescriptionUpload from './components/PrescriptionUpload';
-import VoiceSearch from './components/VoiceSearch';
+
+// Code splitting heavy components with React.lazy
+const AIAssistant = lazy(() => import('./components/AIAssistant'));
+const DrugInteractionChecker = lazy(() => import('./components/DrugInteractionChecker'));
+const PrescriptionUpload = lazy(() => import('./components/PrescriptionUpload'));
+const VoiceSearch = lazy(() => import('./components/VoiceSearch'));
+
 import { translations, Language } from './translations';
 import {
   UserRole, Medicine, MedicineCategory, Order, OrderStatus,
@@ -45,6 +49,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedMed, setSelectedMed] = useState<Medicine | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
 
   // Cart & Wishlist Local States
   const [cart, setCart] = useState<{ medicineId: string; name: string; quantity: number; price: number; strength: string }[]>([]);
@@ -433,6 +438,11 @@ export default function App() {
   return (
     <div className={`min-h-screen flex flex-col font-sans transition-all duration-300 ${accessibility.highContrast ? 'bg-black text-white' : 'bg-[#F5FAFF]'
       }`}>
+      {/* Accessibility Skip Link */}
+      <a href="#main-content" className="skip-link font-bold text-xs rounded-b-lg shadow-md">
+        Skip to main content
+      </a>
+
       {/* Dynamic Banner alerts */}
       <div className="bg-[#22A06B] text-white text-[11px] font-bold text-center py-1 flex items-center justify-center space-x-2">
         <ShieldCheck className="w-4 h-4 text-emerald-300 shrink-0" />
@@ -453,7 +463,7 @@ export default function App() {
         openAuthModal={() => setShowAuthModal(true)}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+      <main id="main-content" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
 
         {/* ELDERLY FRIENDLY BANNER MODE */}
         {accessibility.elderlyMode && (
@@ -478,63 +488,61 @@ export default function App() {
               id="view-home"
             >
               {/* Hero section */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-white rounded-3xl p-6 lg:p-10 border border-gray-100 shadow-sm relative overflow-hidden dark:bg-zinc-950 dark:border-zinc-900">
-                <div className="lg:col-span-7 flex flex-col justify-center space-y-5 z-10">
-                  <span className="bg-[#F5FAFF] text-[#0F6CBD] font-bold text-xs uppercase px-3.5 py-1.5 rounded-full inline-block self-start dark:bg-zinc-900 dark:text-blue-300">
-                    🏥 Certified Sri Lankan Pharmacy
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 bg-white rounded-3xl p-6 lg:p-10 border border-gray-100 shadow-xs relative overflow-hidden dark:bg-zinc-950 dark:border-zinc-900">
+                <div className="lg:col-span-7 flex flex-col justify-center space-y-6 z-10">
+                  <span className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 font-bold text-xs uppercase px-3.5 py-1.5 rounded-full inline-block self-start">
+                    🏥 Certified Sri Lankan Pharmacy • SLMC Reg. 9842
                   </span>
-                  <h2 className={`font-bold tracking-tight text-gray-900 leading-tight dark:text-white ${accessibility.largeText ? 'text-4xl' : 'text-3xl lg:text-4xl'
+                  <h2 className={`font-bold tracking-tight text-gray-900 leading-tight dark:text-white ${accessibility.largeText ? 'text-4xl lg:text-5xl' : 'text-3xl lg:text-4xl'
                     }`}>
-                    Your Trusted clinical <br />
-                    Pharmacy platform in <span className="text-[#0F6CBD]">Jaffna</span>
+                    Order Medicines Online in <span className="text-[#0F6CBD]">Jaffna</span> &amp; Get Fast Delivery
                   </h2>
-                  <p className="text-sm text-gray-500 leading-relaxed max-w-lg">
-                    Order Over-The-Counter medicines safely, upload prescriptions for vision-driven AI order drafting, check compound safety, and secure calendar video consultations with licensed pharmacists.
+                  <p className="text-sm text-gray-500 leading-relaxed max-w-lg dark:text-gray-400">
+                    Jaffna's premier clinical e-commerce store. Upload your prescription for instant AI order drafting, browse thousands of certified Over-The-Counter medicines, and consult our licensed pharmacists on video call.
                   </p>
 
-                  {/* Global search input */}
-                  <div className="bg-gray-50 border border-gray-200 dark:bg-zinc-900 dark:border-zinc-800 rounded-2xl p-2.5 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 max-w-xl">
-                    <div className="flex-1 flex items-center space-x-2 px-2.5">
-                      <Search className="w-4 h-4 text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder={t.searchPlaceholder}
-                        value={searchQuery}
-                        onChange={e => setSearchQuery(e.target.value)}
-                        className="bg-transparent border-none text-xs text-gray-700 w-full focus:outline-none dark:text-white"
-                        id="hero-medicine-search-input"
-                      />
-                    </div>
-                    <div className="flex space-x-2">
-                      <VoiceSearch
-                        currentLang={currentLang}
-                        accessibility={accessibility}
-                        onSpeechResult={(word) => {
-                          setSearchQuery(word);
-                          setView('shop');
-                        }}
-                      />
-                      <button
-                        onClick={() => setView('shop')}
-                        className="bg-[#0F6CBD] text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-[#0c599c] transition shadow-xs flex items-center space-x-1"
-                      >
-                        <span>{t.btnSearch}</span>
-                      </button>
-                    </div>
+                  {/* CTA Buttons */}
+                  <div className="flex flex-wrap gap-3.5">
+                    <button
+                      onClick={() => setView('shop')}
+                      className="bg-[#0F6CBD] text-white text-xs sm:text-sm font-bold px-6 py-3 rounded-2xl hover:bg-[#0c599c] transition shadow-md hover:shadow-lg flex items-center space-x-2"
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                      <span>Order Medicines</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        const el = document.getElementById('prescription-upload-section');
+                        if (el) {
+                          el.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }}
+                      className="bg-white border border-gray-200 text-gray-700 text-xs sm:text-sm font-bold px-6 py-3 rounded-2xl hover:bg-gray-50 transition shadow-xs flex items-center space-x-2 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:hover:bg-zinc-800"
+                    >
+                      <FileText className="w-4 h-4 text-[#0F6CBD]" />
+                      <span>Upload Prescription</span>
+                    </button>
+                    <button
+                      onClick={() => setView('tele')}
+                      className="bg-emerald-50 text-emerald-700 text-xs sm:text-sm font-bold px-6 py-3 rounded-2xl hover:bg-emerald-100 transition flex items-center space-x-2 dark:bg-emerald-950/30 dark:text-emerald-400 dark:hover:bg-emerald-900/40"
+                    >
+                      <PhoneCall className="w-4 h-4" />
+                      <span>Talk to Pharmacist</span>
+                    </button>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-4 pt-2 text-xs font-semibold text-gray-500">
+                  <div className="flex flex-wrap items-center gap-4 pt-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
                     <span className="flex items-center space-x-1">
                       <CheckCircle className="w-4 h-4 text-[#22A06B]" />
-                      <span>SLMC No. 9842</span>
+                      <span>SLMC Licensed</span>
                     </span>
                     <span className="flex items-center space-x-1">
                       <CheckCircle className="w-4 h-4 text-[#22A06B]" />
-                      <span>Cash on Delivery</span>
+                      <span>Free Home Delivery</span>
                     </span>
                     <span className="flex items-center space-x-1">
                       <CheckCircle className="w-4 h-4 text-[#22A06B]" />
-                      <span>WhatsApp Ordering</span>
+                      <span>Secure Payment</span>
                     </span>
                   </div>
                 </div>
@@ -546,6 +554,8 @@ export default function App() {
                         src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&auto=format&fit=crop&q=80"
                         alt="Gishor Pharmacy clinical counter"
                         referrerPolicy="no-referrer"
+                        // @ts-ignore
+                        fetchpriority="high"
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -556,69 +566,350 @@ export default function App() {
                       </div>
                       <div>
                         <span className="text-[10px] text-gray-400 block font-bold">ACCURACY</span>
-                        <span className="text-xs font-extrabold text-gray-800 dark:text-white">Pharmacist Validated</span>
+                        <span className="text-xs font-extrabold text-gray-800 dark:text-white">Licensed Pharmacist</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Main functional split: Chat assistant + Prescription vision upload */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-                {/* AI Assistant Chat column */}
-                <div className="lg:col-span-7">
-                  <AIAssistant currentLang={currentLang} accessibility={accessibility} />
+              {/* Special Offers Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className={`font-bold text-gray-900 dark:text-white ${accessibility.largeText ? 'text-2xl' : 'text-xl'}`}>
+                    Exclusive Healthcare Offers &amp; Discounts
+                  </h3>
+                  <span className="text-xs font-bold text-[#0F6CBD] uppercase tracking-wider">Save on Refills</span>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 dark:from-zinc-900 dark:to-zinc-950 dark:border-zinc-900 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between h-40 shadow-xs">
+                    <div>
+                      <span className="bg-blue-600 text-white font-bold text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        Elderly Care
+                      </span>
+                      <h4 className="font-bold text-gray-900 dark:text-white text-sm mt-2">Senior Citizen Privilege</h4>
+                      <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">Get 10% Flat discount on monthly chronic disease refilling orders.</p>
+                    </div>
+                    <div className="flex justify-between items-center text-xs font-extrabold text-blue-700 dark:text-blue-400">
+                      <span>Promo Code: SENIOR10</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
 
-                {/* Prescription visión ocr column */}
-                <div className="lg:col-span-5 space-y-6">
-                  <PrescriptionUpload
-                    currentLang={currentLang}
-                    accessibility={accessibility}
-                    onOrderDraftCreated={handleOCRReceived}
-                  />
+                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 dark:from-zinc-900 dark:to-zinc-950 dark:border-zinc-900 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between h-40 shadow-xs">
+                    <div>
+                      <span className="bg-[#22A06B] text-white font-bold text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        New Customer
+                      </span>
+                      <h4 className="font-bold text-gray-900 dark:text-white text-sm mt-2">First Order Special</h4>
+                      <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">Free delivery within Jaffna municipal limits for your first online transaction.</p>
+                    </div>
+                    <div className="flex justify-between items-center text-xs font-extrabold text-emerald-700 dark:text-emerald-400">
+                      <span>Applied Automatically</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
 
-                  {/* Quick Drug interaction checker widget */}
-                  <DrugInteractionChecker currentLang={currentLang} accessibility={accessibility} />
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 dark:from-zinc-900 dark:to-zinc-950 dark:border-zinc-900 rounded-2xl p-5 relative overflow-hidden flex flex-col justify-between h-40 shadow-xs">
+                    <div>
+                      <span className="bg-purple-600 text-white font-bold text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        WhatsApp Fast
+                      </span>
+                      <h4 className="font-bold text-gray-900 dark:text-white text-sm mt-2">Refill reminders &amp; Ordering</h4>
+                      <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">Enable automated reminders and re-order clinical items via WhatsApp.</p>
+                    </div>
+                    <div className="flex justify-between items-center text-xs font-extrabold text-purple-700 dark:text-purple-400">
+                      <span>Message "REFILL"</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Categories Section */}
+              {/* Featured Categories Section */}
               <div className="space-y-4">
-                <h3 className={`font-bold text-gray-900 dark:text-white ${accessibility.largeText ? 'text-2xl' : 'text-xl'}`}>
-                  {t.categories}
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className={`font-bold text-gray-900 dark:text-white ${accessibility.largeText ? 'text-2xl' : 'text-xl'}`}>
+                    Shop by Featured Category
+                  </h3>
+                  <button
+                    onClick={() => { setSelectedCategory('All'); setView('shop'); }}
+                    className="text-xs font-bold text-[#0F6CBD] hover:underline"
+                  >
+                    View All Products
+                  </button>
+                </div>
                 <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                  {categories.map(cat => (
+                  {categories.map(cat => {
+                    const getCategoryIcon = (name: string) => {
+                      switch (name) {
+                        case 'Prescription Medicines': return '💊';
+                        case 'OTC Medicines': return '🩹';
+                        case 'Wellness': return '🧴';
+                        case 'Baby Care': return '👶';
+                        case 'Elderly Care': return '👵';
+                        case 'Supplements': return '⚡';
+                        default: return '📦';
+                      }
+                    };
+                    return (
+                      <div
+                        key={cat.id}
+                        onClick={() => { setSelectedCategory(cat.name); setView('shop'); }}
+                        className="bg-white border border-gray-100 dark:bg-zinc-950 dark:border-zinc-900 p-4 rounded-2xl shadow-xs text-center cursor-pointer hover:border-[#0F6CBD] hover:shadow-md transition group"
+                      >
+                        <span className="text-3xl block mb-2 group-hover:scale-110 transition-transform duration-200">
+                          {getCategoryIcon(cat.name)}
+                        </span>
+                        <span className="text-xs font-bold text-gray-800 dark:text-gray-200 block truncate">{cat.name}</span>
+                        <span className="text-[10px] text-gray-400 block mt-1">{cat.itemCount || 0} Items</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Best Selling Medicines Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className={`font-bold text-gray-900 dark:text-white ${accessibility.largeText ? 'text-2xl' : 'text-xl'}`}>
+                    Best Selling Medicines &amp; Healthcare Products
+                  </h3>
+                  <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Fastest Delivery</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                  {medicines.slice(0, 4).map(med => (
                     <div
-                      key={cat.id}
-                      onClick={() => { setSelectedCategory(cat.name); setView('shop'); }}
-                      className="bg-white border border-gray-100 dark:bg-zinc-950 dark:border-zinc-900 p-4 rounded-2xl shadow-xs text-center cursor-pointer hover:border-[#0F6CBD] hover:shadow-md transition"
+                      key={med.id}
+                      className="bg-white border border-gray-100 dark:bg-zinc-950 dark:border-zinc-900 rounded-3xl p-4 shadow-xs flex flex-col justify-between hover:shadow-md transition"
                     >
-                      <span className="text-2xl block mb-2">💊</span>
-                      <span className="text-xs font-bold text-gray-800 dark:text-gray-200 block">{cat.name}</span>
+                      <div>
+                        <div className="relative h-40 rounded-2xl overflow-hidden mb-3 bg-gray-50">
+                          <img
+                            src={med.image}
+                            alt={med.name}
+                            referrerPolicy="no-referrer"
+                            loading="lazy"
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          />
+                          {med.requiresPrescription ? (
+                            <span className="absolute top-2.5 left-2.5 bg-red-600 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-md tracking-wider">
+                              RX REQUIRED
+                            </span>
+                          ) : (
+                            <span className="absolute top-2.5 left-2.5 bg-emerald-600 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-md tracking-wider">
+                              OTC ONLY
+                            </span>
+                          )}
+                          {med.manufacturer && (
+                            <span className="absolute top-2.5 right-2.5 bg-white/90 dark:bg-zinc-900/90 text-gray-800 dark:text-gray-200 text-[8px] font-bold px-1.5 py-0.5 rounded-md shadow-xs border border-gray-200 dark:border-zinc-700">
+                              {med.manufacturer}
+                            </span>
+                          )}
+                          <span className="absolute bottom-2.5 right-2.5 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                            LKR {med.price}
+                          </span>
+                        </div>
+
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[9px] font-bold text-[#0F6CBD] uppercase">{med.category}</span>
+                            <div className="flex items-center text-yellow-400 text-[10px]">
+                              <Star className="w-2.5 h-2.5 fill-current" />
+                              <span className="font-bold ml-0.5 text-gray-700 dark:text-zinc-300">{med.rating || '4.8'}</span>
+                            </div>
+                          </div>
+                          <h4 className="font-bold text-gray-800 dark:text-gray-100 text-sm line-clamp-1">{med.name}</h4>
+                          <p className="text-[10px] text-gray-400 truncate">Gen: {med.genericName}</p>
+                          <p className="text-[11px] text-gray-500 line-clamp-2 mt-1">{med.description}</p>
+                        </div>
+                      </div>
+
+                      <div className="pt-3 mt-3 border-t border-gray-50 dark:border-zinc-900 flex items-center justify-between gap-2">
+                        <div className="text-xs">
+                          <span className="block text-[9px] text-gray-400">STRENGTH</span>
+                          <span className="font-bold text-gray-700 dark:text-gray-300">{med.strength}</span>
+                        </div>
+                        <div className="flex space-x-1.5">
+                          <button
+                            onClick={() => { setSelectedImageIndex(0); setSelectedMed(med); }}
+                            className="px-2 py-1 bg-gray-50 hover:bg-gray-100 text-gray-600 text-[10px] font-semibold rounded-lg border border-gray-200 transition dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0F6CBD]"
+                            aria-label={`View details of ${med.name}`}
+                          >
+                            Details
+                          </button>
+                          <button
+                            onClick={() => addToCart(med)}
+                            className="px-3 py-1 bg-[#0F6CBD] hover:bg-[#0c599c] text-white text-[10px] font-bold rounded-lg transition focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0F6CBD]"
+                            aria-label={`Add ${med.name} to cart`}
+                          >
+                            + Add
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Testimonials */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-[#F3FCF8] p-6 rounded-3xl dark:bg-zinc-950 border border-emerald-100 dark:border-zinc-900">
-                <div className="p-4 space-y-2">
-                  <span className="text-2xl">👴</span>
-                  <p className="text-xs italic text-gray-600 dark:text-gray-300 font-medium">"Using the Large Text and Sinhala language features is so easy. Gishor predicts my Metformin refills and reminds me through WhatsApp."</p>
-                  <span className="text-[10px] font-bold text-gray-400 block">- Mr. Sunil Herath, Chronic Patient</span>
+              {/* Prescription Quick-CTA Banner */}
+              <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-3xl p-6 sm:p-8 shadow-md flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="space-y-2 text-center md:text-left">
+                  <h3 className="font-bold text-xl sm:text-2xl">Have a Doctor's Prescription?</h3>
+                  <p className="text-xs sm:text-sm text-emerald-100 max-w-xl">
+                    Upload your prescription image below. Our AI Vision system will extract the prescription details instantly, compile a draft cart, and route it to our licensed pharmacist Dr. K. Gnanapragasam for rapid SLMC authorization!
+                  </p>
                 </div>
-                <div className="p-4 space-y-2 border-l border-emerald-200 dark:border-zinc-800">
-                  <span className="text-2xl">👩‍👦</span>
-                  <p className="text-xs italic text-gray-600 dark:text-gray-300 font-medium">"I uploaded my child's antibiotics prescription image. The AI vision parsed it instantly, created a draft order, and a licensed pharmacist cleared it within minutes."</p>
-                  <span className="text-[10px] font-bold text-gray-400 block">- Mrs. V. Tharmika, Parent</span>
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('prescription-upload-section');
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                  className="bg-white text-emerald-800 hover:bg-emerald-50 text-xs sm:text-sm font-bold px-6 py-3 rounded-2xl transition shadow-sm whitespace-nowrap"
+                >
+                  Go to Upload Area ⚡
+                </button>
+              </div>
+
+              {/* Main functional split: Chat assistant + Prescription vision upload */}
+              <div className="space-y-4">
+                <div>
+                  <h3 className={`font-bold text-gray-900 dark:text-white ${accessibility.largeText ? 'text-2xl' : 'text-xl'}`}>
+                    Interactive AI Health Center
+                  </h3>
+                  <p className="text-xs text-gray-400">Access instant digital triage and safety checks before ordering</p>
                 </div>
-                <div className="p-4 space-y-2 border-l border-emerald-200 dark:border-zinc-800">
-                  <span className="text-2xl">🩺</span>
-                  <p className="text-xs italic text-gray-600 dark:text-gray-300 font-medium">"Excellent clinical standards. Gishor drug interaction checker is powered by Gemini, giving accurate warning lights on anticoagulant risks."</p>
-                  <span className="text-[10px] font-bold text-gray-400 block">- Dr. S. Kugan, Jaffna Clinician</span>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                  {/* AI Assistant Chat column */}
+                  <div className="lg:col-span-7">
+                    <Suspense fallback={<div className="bg-white dark:bg-zinc-950 p-8 rounded-3xl border text-center text-xs font-semibold text-gray-400">Loading AI Assistant...</div>}>
+                      <AIAssistant currentLang={currentLang} accessibility={accessibility} />
+                    </Suspense>
+                  </div>
+
+                  {/* Prescription visión ocr column */}
+                  <div className="lg:col-span-5 space-y-6" id="prescription-upload-section">
+                    <Suspense fallback={<div className="bg-white dark:bg-zinc-950 p-8 rounded-3xl border text-center text-xs font-semibold text-gray-400">Loading Prescription Upload...</div>}>
+                      <PrescriptionUpload
+                        currentLang={currentLang}
+                        accessibility={accessibility}
+                        onOrderDraftCreated={handleOCRReceived}
+                      />
+                    </Suspense>
+
+                    {/* Quick Drug interaction checker widget */}
+                    <Suspense fallback={<div className="bg-white dark:bg-zinc-950 p-8 rounded-3xl border text-center text-xs font-semibold text-gray-400">Loading Drug Interaction Checker...</div>}>
+                      <DrugInteractionChecker currentLang={currentLang} accessibility={accessibility} />
+                    </Suspense>
+                  </div>
+                </div>
+              </div>
+
+              {/* Why Choose Us & Trust Signals Section */}
+              <div className="bg-gray-50 border border-gray-100 rounded-3xl p-6 lg:p-8 dark:bg-zinc-950 dark:border-zinc-900 space-y-6">
+                <div className="text-center space-y-1">
+                  <span className="text-[10px] font-extrabold text-[#0F6CBD] uppercase tracking-wider">Clinical Integrity</span>
+                  <h3 className="font-bold text-lg sm:text-xl text-gray-900 dark:text-white">Why Jaffna Trusts Gishor Pharmacy</h3>
+                  <p className="text-xs text-gray-400 max-w-md mx-auto">Providing certified pharmaceuticals with maximum compliance, security, and digital convenience.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="bg-white p-5 rounded-2xl border border-gray-100 dark:bg-zinc-900 dark:border-zinc-800 text-center space-y-2">
+                    <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-zinc-800 text-emerald-600 flex items-center justify-center mx-auto text-lg">
+                      📋
+                    </div>
+                    <h4 className="font-bold text-gray-900 dark:text-white text-xs">SLMC Registered</h4>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400">Licensed under registration code SLMC-9842-CORP with dedicated full-time clinical oversight.</p>
+                  </div>
+
+                  <div className="bg-white p-5 rounded-2xl border border-gray-100 dark:bg-zinc-900 dark:border-zinc-800 text-center space-y-2">
+                    <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-zinc-800 text-blue-600 flex items-center justify-center mx-auto text-lg">
+                      🛡️
+                    </div>
+                    <h4 className="font-bold text-gray-900 dark:text-white text-xs">Child-Proof Packaging</h4>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400">All prescription containers are sealed in child-resistant discrete clinical medical wraps.</p>
+                  </div>
+
+                  <div className="bg-white p-5 rounded-2xl border border-gray-100 dark:bg-zinc-900 dark:border-zinc-800 text-center space-y-2">
+                    <div className="w-10 h-10 rounded-full bg-purple-50 dark:bg-zinc-800 text-purple-600 flex items-center justify-center mx-auto text-lg">
+                      🚚
+                    </div>
+                    <h4 className="font-bold text-gray-900 dark:text-white text-xs">Express Doorstep Delivery</h4>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400">Same-day secure cold-chain delivery of temperature-sensitive vaccines &amp; insulins across Jaffna.</p>
+                  </div>
+
+                  <div className="bg-white p-5 rounded-2xl border border-gray-100 dark:bg-zinc-900 dark:border-zinc-800 text-center space-y-2">
+                    <div className="w-10 h-10 rounded-full bg-yellow-50 dark:bg-zinc-800 text-yellow-600 flex items-center justify-center mx-auto text-lg">
+                      🔒
+                    </div>
+                    <h4 className="font-bold text-gray-900 dark:text-white text-xs">Payment &amp; Data Security</h4>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400">PCI-DSS compliant card checkout combined with absolute encrypted patient data storage.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Customer Reviews Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className={`font-bold text-gray-900 dark:text-white ${accessibility.largeText ? 'text-2xl' : 'text-xl'}`}>
+                    Verified Patient Testimonials
+                  </h3>
+                  <div className="flex items-center text-xs text-yellow-400 space-x-1">
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3.5 h-3.5 fill-current" />)}
+                    </div>
+                    <span className="font-bold text-gray-700 dark:text-zinc-300">4.9 / 5 (Based on Google Reviews)</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-[#F3FCF8] p-6 rounded-3xl dark:bg-zinc-950 border border-emerald-100 dark:border-zinc-900 space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-3xl">👴</span>
+                      <div>
+                        <span className="font-extrabold text-xs text-gray-800 dark:text-white block">Mr. Sunil Herath</span>
+                        <span className="text-[9px] text-[#22A06B] font-bold uppercase tracking-wider flex items-center">
+                          <Check className="w-3 h-3 mr-0.5" /> Verified Chronic Patient
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-xs italic text-gray-600 dark:text-gray-300 font-medium">
+                      "Using the Large Text and Sinhala language features is so easy. Gishor predicts my Metformin refills and reminds me through WhatsApp."
+                    </p>
+                  </div>
+
+                  <div className="bg-[#F3FCF8] p-6 rounded-3xl dark:bg-zinc-950 border border-emerald-100 dark:border-zinc-900 space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-3xl">👩‍👦</span>
+                      <div>
+                        <span className="font-extrabold text-xs text-gray-800 dark:text-white block">Mrs. V. Tharmika</span>
+                        <span className="text-[9px] text-[#22A06B] font-bold uppercase tracking-wider flex items-center">
+                          <Check className="w-3 h-3 mr-0.5" /> Verified Buyer
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-xs italic text-gray-600 dark:text-gray-300 font-medium">
+                      "I uploaded my child's antibiotics prescription image. The AI vision parsed it instantly, created a draft order, and a licensed pharmacist cleared it within minutes."
+                    </p>
+                  </div>
+
+                  <div className="bg-[#F3FCF8] p-6 rounded-3xl dark:bg-zinc-950 border border-emerald-100 dark:border-zinc-900 space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-3xl">🩺</span>
+                      <div>
+                        <span className="font-extrabold text-xs text-gray-800 dark:text-white block">Dr. S. Kugan</span>
+                        <span className="text-[9px] text-blue-600 font-bold uppercase tracking-wider flex items-center dark:text-blue-400">
+                          🩺 Certified Jaffna Clinician
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-xs italic text-gray-600 dark:text-gray-300 font-medium">
+                      "Excellent clinical standards. Gishor drug interaction checker is powered by Gemini, giving accurate warning lights on anticoagulant risks."
+                    </p>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -672,6 +963,7 @@ export default function App() {
                           src={med.image}
                           alt={med.name}
                           referrerPolicy="no-referrer"
+                          loading="lazy"
                           className="w-full h-full object-cover"
                         />
                         {med.requiresPrescription ? (
@@ -683,13 +975,21 @@ export default function App() {
                             OTC ONLY
                           </span>
                         )}
+                        {med.manufacturer && (
+                          <span className="absolute top-2.5 right-2.5 bg-white/90 dark:bg-zinc-900/90 text-gray-800 dark:text-gray-200 text-[9px] font-bold px-2 py-0.5 rounded-md shadow-xs border border-gray-200 dark:border-zinc-700">
+                            {med.manufacturer}
+                          </span>
+                        )}
                         <span className="absolute bottom-2.5 right-2.5 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-md">
                           LKR {med.price}
                         </span>
                       </div>
 
                       <div className="space-y-1">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase">{med.category}</span>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-gray-400 uppercase">{med.category}</span>
+                          {med.manufacturer && <span className="text-[9px] font-bold text-[#0F6CBD]">{med.manufacturer}</span>}
+                        </div>
                         <h4 className="font-bold text-gray-800 dark:text-gray-100 text-sm">{med.name}</h4>
                         <p className="text-[11px] text-gray-500 italic">Gen: {med.genericName}</p>
                         <p className="text-xs text-gray-400 line-clamp-2 mt-1">{med.description}</p>
@@ -704,8 +1004,9 @@ export default function App() {
 
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => setSelectedMed(med)}
-                          className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs font-semibold rounded-lg border border-gray-200 transition"
+                          onClick={() => { setSelectedImageIndex(0); setSelectedMed(med); }}
+                          className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs font-semibold rounded-lg border border-gray-200 transition focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0F6CBD]"
+                          aria-label={`View details of ${med.name}`}
                         >
                           Details
                         </button>
@@ -861,6 +1162,179 @@ export default function App() {
                       <span>By {blog.author}</span>
                       <span>{blog.readTime} read</span>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* OFFERS VIEW */}
+          {currentView === 'offers' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6" id="view-offers">
+              <div>
+                <h2 className="font-bold text-gray-900 dark:text-white text-2xl">{t.offersTitle}</h2>
+                <p className="text-xs text-gray-400">Save on monthly refills, chronic care packages, and healthcare items</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 dark:from-zinc-900 dark:to-zinc-950 dark:border-zinc-800 rounded-3xl p-6 shadow-sm space-y-4">
+                  <span className="bg-blue-600 text-white font-bold text-[10px] px-3 py-1 rounded-full uppercase">Senior Citizen</span>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white">10% Off Monthly Chronic Refills</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">Available for registered senior citizens ordering diabetic or cardiology medications.</p>
+                  <div className="pt-2 border-t font-mono text-xs font-bold text-blue-700 dark:text-blue-400">CODE: SENIOR10</div>
+                </div>
+                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 dark:from-zinc-900 dark:to-zinc-950 dark:border-zinc-800 rounded-3xl p-6 shadow-sm space-y-4">
+                  <span className="bg-emerald-600 text-white font-bold text-[10px] px-3 py-1 rounded-full uppercase">First Order</span>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white">Free Doorstep Delivery</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">Complimentary express home delivery across all Jaffna municipal zones for your first web order.</p>
+                  <div className="pt-2 border-t font-mono text-xs font-bold text-emerald-700 dark:text-emerald-400">AUTO-APPLIED</div>
+                </div>
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 dark:from-zinc-900 dark:to-zinc-950 dark:border-zinc-800 rounded-3xl p-6 shadow-sm space-y-4">
+                  <span className="bg-purple-600 text-white font-bold text-[10px] px-3 py-1 rounded-full uppercase">Bundle Save</span>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white">Family First Aid Pack 15% Off</h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-300">Purchase OTC pain relief, antiseptic wipes, and bandages together for extra savings.</p>
+                  <div className="pt-2 border-t font-mono text-xs font-bold text-purple-700 dark:text-purple-400">CODE: HEALTH15</div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* TRACK ORDER VIEW */}
+          {currentView === 'track-order' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6 max-w-2xl mx-auto" id="view-track-order">
+              <div className="text-center space-y-2">
+                <h2 className="font-bold text-gray-900 dark:text-white text-2xl">{t.trackOrderTitle}</h2>
+                <p className="text-xs text-gray-400">Enter your Order ID to verify real-time SLMC pharmacist dispatch status</p>
+              </div>
+              <div className="bg-white dark:bg-zinc-950 p-6 rounded-3xl border border-gray-100 dark:border-zinc-900 shadow-sm space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 mb-1">Order ID</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="e.g. ord-1721500000000"
+                      className="flex-1 bg-gray-50 dark:bg-zinc-900 border rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-[#0F6CBD]"
+                    />
+                    <button className="bg-[#0F6CBD] text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-[#0c599c]">Track</button>
+                  </div>
+                </div>
+                <div className="border-t pt-4 space-y-3 text-xs">
+                  <div className="flex items-center space-x-3 text-emerald-600 font-semibold">
+                    <CheckCircle className="w-5 h-5" />
+                    <span>Sample Order #ord-1: In Preparation (Pharmacist Dr. Gnanapragasam approved)</span>
+                  </div>
+                  <div className="flex items-center space-x-3 text-gray-400">
+                    <Clock className="w-5 h-5" />
+                    <span>Estimated Jaffna Delivery: Today within 2 hours</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* CONTACT VIEW */}
+          {currentView === 'contact' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6 max-w-3xl mx-auto" id="view-contact">
+              <div className="text-center space-y-2">
+                <h2 className="font-bold text-gray-900 dark:text-white text-2xl">{t.contactTitle}</h2>
+                <p className="text-xs text-gray-400">We're here to answer your clinical, prescription, and delivery queries</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white dark:bg-zinc-950 p-6 rounded-3xl border border-gray-100 dark:border-zinc-900 space-y-4 text-xs">
+                  <h3 className="font-bold text-sm text-[#0F6CBD]">Pharmacy Counter Location</h3>
+                  <p className="text-gray-500">Jaffna Hospital Road, Jaffna, Sri Lanka (Opposite Teaching Hospital)</p>
+                  <div className="space-y-2 pt-2 border-t">
+                    <p><strong>Hotline:</strong> +94 (21) 222-2222</p>
+                    <p><strong>WhatsApp:</strong> +94 (77) 123-4567</p>
+                    <p><strong>Email:</strong> support@gishor.com</p>
+                    <p><strong>Hours:</strong> Daily 07:30 AM - 10:00 PM</p>
+                  </div>
+                </div>
+                <form onSubmit={(e) => { e.preventDefault(); alert("Thank you! Your message has been sent to our pharmacists."); }} className="bg-white dark:bg-zinc-950 p-6 rounded-3xl border border-gray-100 dark:border-zinc-900 space-y-3 text-xs">
+                  <h3 className="font-bold text-sm text-gray-800 dark:text-white">Send Us a Message</h3>
+                  <input type="text" placeholder="Your Name" required className="w-full bg-gray-50 dark:bg-zinc-900 border rounded-xl px-3 py-2 text-xs" />
+                  <input type="email" placeholder="Your Email" required className="w-full bg-gray-50 dark:bg-zinc-900 border rounded-xl px-3 py-2 text-xs" />
+                  <textarea placeholder="Your Question or Inquiry..." required rows={3} className="w-full bg-gray-50 dark:bg-zinc-900 border rounded-xl px-3 py-2 text-xs resize-none" />
+                  <button type="submit" className="w-full bg-[#0F6CBD] text-white py-2.5 rounded-xl font-bold hover:bg-[#0c599c]">Send Message</button>
+                </form>
+              </div>
+            </motion.div>
+          )}
+
+          {/* REFUND POLICY VIEW */}
+          {currentView === 'refund-policy' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6 max-w-3xl mx-auto" id="view-refund-policy">
+              <div className="bg-white dark:bg-zinc-950 p-8 rounded-3xl border border-gray-100 dark:border-zinc-900 space-y-4 text-xs leading-relaxed">
+                <h2 className="font-bold text-gray-900 dark:text-white text-2xl">{t.refundPolicyTitle}</h2>
+                <p className="text-gray-500">Effective Date: January 1, 2026 • Gishor Pharmacy (Pvt) Ltd</p>
+                <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">1. Prescriptions & Prescription Items</h3>
+                <p className="text-gray-600 dark:text-gray-300">Under Sri Lanka NMRA regulations, opened prescription medicines cannot be returned once dispatched to preserve cold-chain and hygiene integrity. If an item delivered is damaged, expired, or incorrect against your upload, a 100% full refund or immediate replacement will be issued.</p>
+                <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">2. OTC Products & Wellness Items</h3>
+                <p className="text-gray-600 dark:text-gray-300">Unopened Over-The-Counter products in original sealed packaging may be returned within 7 days of delivery with full proof of purchase.</p>
+                <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">3. Refund Processing Time</h3>
+                <p className="text-gray-600 dark:text-gray-300">Approved refunds for card transactions are processed within 3-5 business days. Cash on delivery refunds are credited as Gishor Store Credits or bank transfer.</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* DELIVERY POLICY VIEW */}
+          {currentView === 'delivery-policy' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6 max-w-3xl mx-auto" id="view-delivery-policy">
+              <div className="bg-white dark:bg-zinc-950 p-8 rounded-3xl border border-gray-100 dark:border-zinc-900 space-y-4 text-xs leading-relaxed">
+                <h2 className="font-bold text-gray-900 dark:text-white text-2xl">{t.deliveryPolicyTitle}</h2>
+                <p className="text-gray-500">Jaffna District Express Healthcare Logistics</p>
+                <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">1. Delivery Zones & Timelines</h3>
+                <p className="text-gray-600 dark:text-gray-300">We offer same-day express delivery within Jaffna municipal limits (2-4 hours). Outer Jaffna peninsula areas (Chavakachcheri, Point Pedro, Nallur) are delivered within 6-12 hours.</p>
+                <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">2. Cold-Chain & Vaccine Transport</h3>
+                <p className="text-gray-600 dark:text-gray-300">Temperature-sensitive items (insulin, vaccines) are packaged in insulated thermal boxes with gel packs, guaranteeing 2-8°C maintenance during transit.</p>
+                <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">3. Identity & Prescription Verification</h3>
+                <p className="text-gray-600 dark:text-gray-300">Our delivery drivers may request to inspect original physical prescription slips for controlled medications upon arrival.</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* FAQ VIEW */}
+          {currentView === 'faq' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6 max-w-3xl mx-auto" id="view-faq">
+              <div className="text-center space-y-2">
+                <h2 className="font-bold text-gray-900 dark:text-white text-2xl">{t.faqTitle}</h2>
+                <p className="text-xs text-gray-400">Answers to common questions about prescription uploads, delivery, and telepharmacy</p>
+              </div>
+              <div className="space-y-4">
+                {[
+                  { q: "How does the AI Prescription Upload work?", a: "When you upload an image of your prescription, our AI Vision system extracts medicine names, dosages, and doctor notes to draft your cart automatically. A licensed SLMC pharmacist inspects and approves it before dispatch." },
+                  { q: "Are all medicines certified?", a: "Yes, 100% of our pharmaceutical stock is sourced directly from NMRA-registered manufacturers and stored in climate-controlled premises under SLMC License No. 9842." },
+                  { q: "Can I consult a pharmacist online?", a: "Yes! Use our Telepharmacy tab to book a video or voice call with Dr. Gnanapragasam or Ms. Ahilya for advice on dosage, side effects, and drug interactions." },
+                  { q: "What payment options are supported?", a: "We accept Cash on Delivery, Credit/Debit cards, and Sri Lankan Mobile Wallets (mCash & eZ Cash)." }
+                ].map((item, idx) => (
+                  <div key={idx} className="bg-white dark:bg-zinc-950 p-5 rounded-2xl border border-gray-100 dark:border-zinc-900 space-y-2">
+                    <h3 className="font-bold text-sm text-gray-800 dark:text-white">Q: {item.q}</h3>
+                    <p className="text-xs text-gray-500 leading-relaxed">A: {item.a}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* CAREERS VIEW */}
+          {currentView === 'careers' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6 max-w-3xl mx-auto" id="view-careers">
+              <div className="text-center space-y-2">
+                <h2 className="font-bold text-gray-900 dark:text-white text-2xl">{t.careersTitle}</h2>
+                <p className="text-xs text-gray-400">Join Northern Sri Lanka's fastest growing digital pharmacy team</p>
+              </div>
+              <div className="space-y-4">
+                {[
+                  { role: "Clinical Pharmacist (Full-Time)", loc: "Jaffna Central Counter", req: "B.Pharm degree, valid SLMC registration, 2+ years clinical experience." },
+                  { role: "Pharmacy Assistant / Dispenser", loc: "Jaffna", req: "Diploma in Pharmacy or NVQ Level 4 certification." },
+                  { role: "Cold-Chain Logistics Courier", loc: "Jaffna Peninsula", req: "Valid riding license, clean record, familiarity with medical package handling." }
+                ].map((job, idx) => (
+                  <div key={idx} className="bg-white dark:bg-zinc-950 p-6 rounded-3xl border border-gray-100 dark:border-zinc-900 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                      <h3 className="font-bold text-sm text-gray-800 dark:text-white">{job.role}</h3>
+                      <p className="text-xs text-[#0F6CBD] font-semibold">{job.loc}</p>
+                      <p className="text-xs text-gray-500 mt-1">{job.req}</p>
+                    </div>
+                    <button onClick={() => alert("Please send your CV to careers@gishor.com")} className="bg-[#22A06B] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#1d8257] whitespace-nowrap">Apply Now</button>
                   </div>
                 ))}
               </div>
@@ -1289,7 +1763,7 @@ export default function App() {
       </main>
 
       {/* FOOTER */}
-      <Footer currentLang={currentLang} accessibility={accessibility} />
+      <Footer currentLang={currentLang} accessibility={accessibility} setView={setView} />
 
       {/* LOGIN & SIGNUP MODAL */}
       {showAuthModal && (
@@ -1755,27 +2229,81 @@ export default function App() {
 
       {/* DETAIL MODAL */}
       {selectedMed && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-[9999]">
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-[9999]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-product-title"
+          onKeyDown={(e) => { if (e.key === 'Escape') setSelectedMed(null); }}
+        >
           <div className={`w-full max-w-lg rounded-3xl p-6 shadow-xl border max-h-[90vh] overflow-y-auto ${accessibility.highContrast ? 'bg-black text-white border-yellow-400' : 'bg-white text-gray-800 border-gray-100'
             }`}>
             <div className="flex justify-between items-start mb-4 border-b pb-3">
               <div>
-                <h3 className="font-bold text-base text-gray-900 dark:text-white">{selectedMed.name}</h3>
+                <div className="flex items-center space-x-2">
+                  <h3 id="modal-product-title" className="font-bold text-base text-gray-900 dark:text-white">{selectedMed.name}</h3>
+                  {selectedMed.manufacturer && (
+                    <span className="text-[10px] bg-blue-50 text-[#0F6CBD] dark:bg-zinc-800 dark:text-sky-400 px-2 py-0.5 rounded-full font-semibold border border-blue-100 dark:border-zinc-700">
+                      {selectedMed.manufacturer}
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-gray-400 italic">Gen: {selectedMed.genericName}</p>
               </div>
-              <button onClick={() => setSelectedMed(null)} className="p-1 hover:bg-gray-100 rounded-lg dark:hover:bg-zinc-800">
+              <button 
+                onClick={() => setSelectedMed(null)} 
+                className="p-1 hover:bg-gray-100 rounded-lg dark:hover:bg-zinc-800 text-gray-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0F6CBD]"
+                aria-label="Close product details dialog"
+              >
                 <span>✕</span>
               </button>
             </div>
 
             <div className="space-y-4 text-xs leading-relaxed">
-              <div className="h-44 rounded-xl overflow-hidden bg-gray-50">
-                <img
-                  src={selectedMed.image}
-                  alt={selectedMed.name}
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
-                />
+              {/* Main Zoomable Image View */}
+              <div className="space-y-2">
+                <div className="h-56 rounded-2xl overflow-hidden bg-gray-50 relative group image-zoom-container border border-gray-100 dark:border-zinc-800">
+                  <img
+                    src={(selectedMed.images && selectedMed.images[selectedImageIndex]) || selectedMed.image}
+                    alt={`${selectedMed.name} - View ${selectedImageIndex + 1}`}
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 cursor-zoom-in group-hover:scale-125"
+                  />
+                  <span className="absolute top-2 right-2 bg-black/60 text-white text-[9px] font-bold px-2 py-1 rounded-md pointer-events-none">
+                    🔍 Hover to Zoom
+                  </span>
+                  {selectedMed.manufacturerLogo && (
+                    <div className="absolute bottom-2 left-2 bg-white/90 dark:bg-zinc-900/90 p-1.5 rounded-lg border border-gray-200 dark:border-zinc-700 flex items-center space-x-1 shadow-xs">
+                      <img src={selectedMed.manufacturerLogo} alt={selectedMed.manufacturer || 'Manufacturer'} className="w-5 h-5 object-contain" />
+                      <span className="text-[9px] font-bold text-gray-600 dark:text-gray-300">{selectedMed.manufacturer || 'Brand'}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Multi-angle Thumbnail Selection Strip */}
+                {selectedMed.images && selectedMed.images.length > 1 && (
+                  <div>
+                    <span className="text-[10px] font-bold text-gray-400 block mb-1">MULTIPLE ANGLE VIEWS:</span>
+                    <div className="flex gap-2" role="group" aria-label="Product image angle options">
+                      {selectedMed.images.map((imgUrl, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedImageIndex(idx)}
+                          className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition ${
+                            selectedImageIndex === idx
+                              ? 'border-[#0F6CBD] shadow-md scale-105'
+                              : 'border-gray-200 dark:border-zinc-800 opacity-70 hover:opacity-100'
+                          }`}
+                          aria-label={`View image angle ${idx + 1}`}
+                          aria-pressed={selectedImageIndex === idx}
+                        >
+                          <img src={imgUrl} alt={`Angle ${idx + 1}`} className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -1806,7 +2334,8 @@ export default function App() {
                 </div>
                 <button
                   onClick={() => { addToCart(selectedMed); setSelectedMed(null); }}
-                  className="bg-[#0F6CBD] hover:bg-[#0c599c] text-white font-bold px-5 py-2.5 rounded-xl shadow-xs"
+                  className="bg-[#0F6CBD] hover:bg-[#0c599c] text-white font-bold px-5 py-2.5 rounded-xl shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0F6CBD]"
+                  aria-label={`Add ${selectedMed.name} to shopping cart`}
                 >
                   Add to Cart
                 </button>
