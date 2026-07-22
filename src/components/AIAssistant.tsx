@@ -17,7 +17,7 @@ export default function AIAssistant({ currentLang, accessibility }: AIAssistantP
   const [messages, setMessages] = React.useState<ChatMessage[]>([
     {
       sender: 'assistant',
-      text: "Vanakkam and Ayubowan! I am your Gishor Pharmacy AI Health Assistant. I can help you check minor symptoms, explain dosage guidelines, and suggest OTC support. \n\n*To help me assist you safely, please specify your symptoms, age, and any active medications or allergies.*",
+      text: "Vanakkam and Ayubowan! I am your Kaithady MediCare Hub AI Health Assistant. I can help you check minor symptoms, explain dosage guidelines, and suggest OTC support. \n\n*To help me assist you safely, please specify your symptoms, age, and any active medications or allergies.*",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);

@@ -261,7 +261,7 @@ export const INITIAL_DRUG_INTERACTIONS = [
 ];
 
 export const INITIAL_SETTINGS = {
-  pharmacyName: "Gishor Pharmacy",
+  pharmacyName: "Kaithady MediCare Hub",
   address: "Jaffna, Sri Lanka",
   licenseNumber: "PHA-12345",
   pharmacistInCharge: "Dr. K. Gnanapragasam",

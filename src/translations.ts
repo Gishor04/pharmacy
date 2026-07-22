@@ -2,7 +2,7 @@ export type Language = 'en' | 'ta' | 'si';
 
 export const translations = {
   en: {
-    brandName: "Gishor Pharmacy",
+    brandName: "Kaithady MediCare Hub",
     location: "Jaffna, Sri Lanka",
     tagline: "Your Trusted AI-Powered Digital Healthcare Partner",
     emergencyContact: "Emergency Contact",
@@ -65,7 +65,7 @@ export const translations = {
     refundPolicyTitle: "Refund Policy",
     deliveryPolicyTitle: "Delivery Policy",
     faqTitle: "Frequently Asked Questions",
-    careersTitle: "Careers at Gishor Pharmacy",
+    careersTitle: "Careers at Kaithady MediCare Hub",
     contactTitle: "Contact Us",
     offersTitle: "Exclusive Offers",
     trackOrderTitle: "Track Your Order"

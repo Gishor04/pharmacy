@@ -497,7 +497,7 @@ app.post('/api/chats/message', async (req, res) => {
 
   if (ai) {
     try {
-      const systemInstruction = `You are an elite, highly trusted clinical pharmacy AI assistant representing Gishor Pharmacy in Jaffna, Srilanka. 
+      const systemInstruction = `You are an elite, highly trusted clinical pharmacy AI assistant representing Kaithady MediCare Hub in Jaffna, Srilanka. 
 Your goal is to answer patient symptoms or wellness inquiries, check minor ailments, and suggest standard safe OTC medicines or daily supplements.
 CRITICAL REQUIREMENTS:
 1. Always maintain a warm, safe, medical-grade, professional, and reassuring tone.
@@ -542,7 +542,7 @@ CRITICAL REQUIREMENTS:
   } else if (text.includes("diabetes") || text.includes("metformin") || text.includes("sugar")) {
     reply = "Managing diabetic wellness is key. Patients on Glucophage (Metformin) should maintain steady meal schedules, stay highly hydrated in Sri Lankan heat to protect renal functions, and take their doses precisely during breakfast/dinner to reduce gastrointestinal irritation. We recommend scheduling a monthly blood glucose analysis.";
   } else {
-    reply = "Thank you for reaching out to Gishor Pharmacy. Could you please specify your wellness concern or symptoms? Please share: \n1. Your main symptoms.\n2. How long you've had them.\n3. Any existing allergies (such as Penicillin) so our pharmacists can recommend the safest Over-The-Counter support.";
+    reply = "Thank you for reaching out to Kaithady MediCare Hub. Could you please specify your wellness concern or symptoms? Please share: \n1. Your main symptoms.\n2. How long you've had them.\n3. Any existing allergies (such as Penicillin) so our pharmacists can recommend the safest Over-The-Counter support.";
   }
 
   res.json({ text: reply + disclaimer });
@@ -640,7 +640,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Gishor Pharmacy Full-Stack Server running at http://localhost:${PORT}`);
+    console.log(`Kaithady MediCare Hub Full-Stack Server running at http://localhost:${PORT}`);
   });
 }
 

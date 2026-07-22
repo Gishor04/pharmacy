@@ -184,7 +184,7 @@ export default function Footer({ currentLang, accessibility, setView }: FooterPr
           <strong>{t.disclaimerLabel.toUpperCase()}:</strong> {t.warningBanner}
         </p>
         <div className="flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-2 text-[11px]">
-          <span>© 2026 Gishor Pharmacy (Pvt) Ltd. All Rights Reserved. Reg No: PV-40592. Jaffna Sri Lanka.</span>
+          <span>© 2026 Kaithady MediCare Hub (Pvt) Ltd. All Rights Reserved. Reg No: PV-40592. Jaffna Sri Lanka.</span>
           <div className="flex flex-wrap justify-center space-x-4">
             <button onClick={() => setView('privacy')} className="hover:underline cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]">Privacy Policy</button>
             <span>•</span>

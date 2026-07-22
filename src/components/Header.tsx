@@ -137,7 +137,7 @@ export default function Header({
           id="brand-logo-container"
           role="link"
           tabIndex={0}
-          aria-label="Gishor Pharmacy - Go to homepage"
+          aria-label="Kaithady MediCare Hub - Go to homepage"
         >
           <div className={`p-2.5 rounded-xl transition ${
             accessibility.highContrast ? 'bg-yellow-400 text-black' : 'bg-[#F5FAFF] text-[#0F6CBD] group-hover:bg-[#0F6CBD] group-hover:text-white'

@@ -420,7 +420,7 @@ export default function App() {
 
   // WhatsApp Checkout Helper
   const generateWhatsAppCheckout = () => {
-    let text = `*GISHOR PHARMACY ORDER REQUEST*\n`;
+    let text = `*KAITHADY MEDICARE HUB ORDER REQUEST*\n`;
     text += `Customer: ${currentUser?.name || "Guest"}\n`;
     text += `Delivery Address: ${deliveryAddress}\n\n`;
     text += `*ITEMS:*\n`;
@@ -552,7 +552,7 @@ export default function App() {
                     <div className="w-[340px] h-[340px] rounded-3xl overflow-hidden shadow-md">
                       <img
                         src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&auto=format&fit=crop&q=80"
-                        alt="Gishor Pharmacy clinical counter"
+                        alt="Kaithady MediCare Hub clinical counter"
                         referrerPolicy="no-referrer"
                         // @ts-ignore
                         fetchpriority="high"
@@ -812,7 +812,7 @@ export default function App() {
               <div className="bg-gray-50 border border-gray-100 rounded-3xl p-6 lg:p-8 dark:bg-zinc-950 dark:border-zinc-900 space-y-6">
                 <div className="text-center space-y-1">
                   <span className="text-[10px] font-extrabold text-[#0F6CBD] uppercase tracking-wider">Clinical Integrity</span>
-                  <h3 className="font-bold text-lg sm:text-xl text-gray-900 dark:text-white">Why Jaffna Trusts Gishor Pharmacy</h3>
+                  <h3 className="font-bold text-lg sm:text-xl text-gray-900 dark:text-white">Why Jaffna Trusts Kaithady MediCare Hub</h3>
                   <p className="text-xs text-gray-400 max-w-md mx-auto">Providing certified pharmaceuticals with maximum compliance, security, and digital convenience.</p>
                 </div>
 
@@ -1265,7 +1265,7 @@ export default function App() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6 max-w-3xl mx-auto" id="view-refund-policy">
               <div className="bg-white dark:bg-zinc-950 p-8 rounded-3xl border border-gray-100 dark:border-zinc-900 space-y-4 text-xs leading-relaxed">
                 <h2 className="font-bold text-gray-900 dark:text-white text-2xl">{t.refundPolicyTitle}</h2>
-                <p className="text-gray-500">Effective Date: January 1, 2026 • Gishor Pharmacy (Pvt) Ltd</p>
+                <p className="text-gray-500">Effective Date: January 1, 2026 • Kaithady MediCare Hub (Pvt) Ltd</p>
                 <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">1. Prescriptions & Prescription Items</h3>
                 <p className="text-gray-600 dark:text-gray-300">Under Sri Lanka NMRA regulations, opened prescription medicines cannot be returned once dispatched to preserve cold-chain and hygiene integrity. If an item delivered is damaged, expired, or incorrect against your upload, a 100% full refund or immediate replacement will be issued.</p>
                 <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">2. OTC Products & Wellness Items</h3>
@@ -1353,7 +1353,7 @@ export default function App() {
               <div className="bg-white border p-6 rounded-3xl dark:bg-zinc-950 max-w-3xl mx-auto space-y-4">
                 <h2 className="font-bold text-[#0F6CBD] text-2xl">{t.aboutTitle}</h2>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  Gishor Pharmacy was established in Jaffna in 2014 to serve the unique health concerns of local families, diabetic patients, and the elderly. Operating under licensed SLMC certifications, we combine human care with secure digital AI vision systems to guarantee dosage safety.
+                  Kaithady MediCare Hub was established in Jaffna in 2014 to serve the unique health concerns of local families, diabetic patients, and the elderly. Operating under licensed SLMC certifications, we combine human care with secure digital AI vision systems to guarantee dosage safety.
                 </p>
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100 dark:border-zinc-800 text-xs">
                   <div>
@@ -1707,7 +1707,7 @@ export default function App() {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                   <h2 className="font-bold text-gray-900 dark:text-white text-2xl">Admin Central Command</h2>
-                  <p className="text-xs text-gray-400">Gishor Pharmacy Corporate Control</p>
+                  <p className="text-xs text-gray-400">Kaithady MediCare Hub Corporate Control</p>
                 </div>
                 <button
                   type="button"
@@ -1772,7 +1772,7 @@ export default function App() {
             }`}>
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Gishor Pharmacy Portal</h3>
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white">Kaithady MediCare Hub Portal</h3>
                 <p className="text-xs text-gray-400">Access your custom dashboard safely</p>
               </div>
               <button onClick={() => setShowAuthModal(false)} className="p-1 hover:bg-gray-100 rounded-lg dark:hover:bg-zinc-800 text-gray-400">
@@ -1989,7 +1989,7 @@ export default function App() {
             <div className="flex justify-between items-start mb-4 border-b pb-3 border-gray-100 dark:border-zinc-900">
               <div>
                 <h3 className="font-bold text-lg text-gray-900 dark:text-white">Add Medicine to Store</h3>
-                <p className="text-xs text-gray-400">Introduce a new product to Gishor Pharmacy's catalog</p>
+                <p className="text-xs text-gray-400">Introduce a new product to Kaithady MediCare Hub's catalog</p>
               </div>
               <button
                 onClick={() => {
