@@ -3,8 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import { GoogleGenAI, Type } from '@google/genai';
 import dotenv from 'dotenv';
-import { UserRole, OrderStatus } from './src/types';
-import { connectMongoDB, dbAdapter } from './src/db/mongodb';
+import { UserRole, OrderStatus } from './src/types.js';
+import { connectMongoDB, dbAdapter } from './src/db/mongodb.js';
 
 
 dotenv.config();

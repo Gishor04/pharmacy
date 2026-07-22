@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
-import { UserRole, OrderStatus } from '../types';
+import { UserRole, OrderStatus } from '../types.js';
 
 // Connection status
 let isMongoConnected = false;
@@ -235,7 +235,7 @@ export function getMongoStatus() {
   return isMongoConnected;
 }
 
-import { INITIAL_MEDICINES, INITIAL_CATEGORIES, INITIAL_PHARMACISTS, INITIAL_DOCTORS, INITIAL_BLOGS, INITIAL_DRUG_INTERACTIONS, INITIAL_SETTINGS } from './seedData';
+import { INITIAL_MEDICINES, INITIAL_CATEGORIES, INITIAL_PHARMACISTS, INITIAL_DOCTORS, INITIAL_BLOGS, INITIAL_DRUG_INTERACTIONS, INITIAL_SETTINGS } from './seedData.js';
 
 // Fallback Database Helpers
 let memoryDb: any = null;

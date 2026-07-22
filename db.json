@@ -586,7 +586,7 @@
                 }
             ],
             "total": 1200,
-            "status": "Waiting Pharmacist",
+            "status": "Processing",
             "paymentMethod": "Card",
             "paymentStatus": "Pending",
             "deliveryAddress": "No 45, Temple Road, Jaffna",
