@@ -160,6 +160,60 @@ export const INITIAL_MEDICINES = [
     reviewsCount: 22,
     rating: 4.8,
     expiryDate: "2028-08-31"
+  },
+  {
+    id: "med-10",
+    name: "Himalaya Moisturizing Body Lotion",
+    genericName: "Aloe Vera & Milk Protein Body Lotion",
+    category: "Body Care",
+    price: 680,
+    description: "Dermatologist-tested daily moisturizing body lotion with pure Aloe Vera and natural milk proteins. Deeply nourishes dry and sensitive skin in Jaffna's warm climate.",
+    usageInstructions: "Apply generously all over the body after bath and at bedtime. Massage gently until fully absorbed.",
+    sideEffects: [],
+    warnings: "For external use only. Avoid contact with eyes. Discontinue use if skin irritation occurs.",
+    strength: "200ml",
+    stock: 95,
+    image: "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400&auto=format&fit=crop&q=60",
+    requiresPrescription: false,
+    reviewsCount: 34,
+    rating: 4.6,
+    expiryDate: "2028-04-30"
+  },
+  {
+    id: "med-11",
+    name: "Dettol Antiseptic Liquid",
+    genericName: "Chloroxylenol 4.8% w/v",
+    category: "Body Care",
+    price: 490,
+    description: "Original clinical antiseptic liquid trusted by hospitals and homes for over 90 years. Kills 99.9% of germs on skin wounds, cuts, and insect bites. Essential for every Sri Lankan household.",
+    usageInstructions: "For wound care: Dilute 1 capful in a mug of water. For bathing: Add 2 capfuls to bath water. Do not apply undiluted to broken skin.",
+    sideEffects: ["Mild skin dryness with frequent use"],
+    warnings: "Keep out of reach of children. Not for internal use. If swallowed seek medical advice immediately.",
+    strength: "100ml",
+    stock: 200,
+    image: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&auto=format&fit=crop&q=60",
+    requiresPrescription: false,
+    reviewsCount: 67,
+    rating: 4.9,
+    expiryDate: "2028-11-30"
+  },
+  {
+    id: "med-12",
+    name: "Cuticura Medicated Talcum Powder",
+    genericName: "Zinc Oxide & Menthol Talc",
+    category: "Body Care",
+    price: 320,
+    description: "Classic medicated talcum powder with cooling menthol and zinc oxide. Prevents heat rash, prickly heat, and bacterial growth in Sri Lanka's tropical heat. Gentle for all skin types.",
+    usageInstructions: "Apply generously to clean, dry skin, particularly underarms, groin, and skin folds. Use after bathing daily.",
+    sideEffects: [],
+    warnings: "Avoid inhalation. Keep away from baby's face. For external use only.",
+    strength: "200g",
+    stock: 150,
+    image: "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=400&auto=format&fit=crop&q=60",
+    requiresPrescription: false,
+    reviewsCount: 19,
+    rating: 4.5,
+    expiryDate: "2029-01-31"
   }
 ];
 
@@ -169,7 +223,8 @@ export const INITIAL_CATEGORIES = [
   { id: "cat-3", name: "Wellness", icon: "HeartPulse", description: "Daily hygiene, skin treatments, and healthcare goods", itemCount: 1 },
   { id: "cat-4", name: "Baby Care", icon: "Baby", description: "Formulas, diapers, soft wipes, and vitamins for children", itemCount: 1 },
   { id: "cat-5", name: "Elderly Care", icon: "ShieldAlert", description: "High-protein supplements, mobility supports, and aids", itemCount: 1 },
-  { id: "cat-6", name: "Supplements", icon: "Sparkles", description: "Vitamins, immunity capsules, and muscle protein powders", itemCount: 1 }
+  { id: "cat-6", name: "Supplements", icon: "Sparkles", description: "Vitamins, immunity capsules, and muscle protein powders", itemCount: 1 },
+  { id: "cat-7", name: "Body Care", icon: "Droplets", description: "Antiseptics, moisturizers, talcum powders, and skincare", itemCount: 3 }
 ];
 
 export const INITIAL_PHARMACISTS = [

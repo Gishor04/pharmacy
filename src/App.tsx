@@ -56,6 +56,10 @@ export default function App() {
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [deliveryAddress, setDeliveryAddress] = useState('No 45, Temple Road, Jaffna');
   const [paymentMethod, setPaymentMethod] = useState<'Cash on Delivery' | 'Card' | 'Mobile Wallet'>('Cash on Delivery');
+  const [cartToast, setCartToast] = useState<string | null>(null);
+
+  // Blog Detail State
+  const [selectedBlog, setSelectedBlog] = useState<any | null>(null);
 
   // Active User Authentication
   const [currentUser, setCurrentUser] = useState<{ id: string; name: string; email: string; role: UserRole; allergies?: string[]; chronicConditions?: string[] } | null>({
@@ -310,6 +314,9 @@ export default function App() {
       }
       return [...prev, { medicineId: med.id, name: med.name, quantity: 1, price: med.price, strength: med.strength }];
     });
+    // Show cart toast notification
+    setCartToast(med.name);
+    setTimeout(() => setCartToast(null), 2500);
   };
 
   const removeFromCart = (medId: string) => {
@@ -649,6 +656,7 @@ export default function App() {
                         case 'Baby Care': return '👶';
                         case 'Elderly Care': return '👵';
                         case 'Supplements': return '⚡';
+                        case 'Body Care': return '🫧';
                         default: return '📦';
                       }
                     };
@@ -1154,16 +1162,127 @@ export default function App() {
                         </span>
                       </div>
                       <div className="p-4 space-y-2">
-                        <h4 className="font-bold text-gray-800 dark:text-white text-sm">{blog.title}</h4>
-                        <p className="text-xs text-gray-500 leading-relaxed line-clamp-4">{blog.content}</p>
+                        <h4 className="font-bold text-gray-900 dark:text-white text-sm leading-snug">{blog.title}</h4>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3">{blog.content}</p>
                       </div>
                     </div>
-                    <div className="p-4 pt-0 border-t border-gray-50 mt-2 flex justify-between items-center text-[10px] text-gray-400 font-semibold">
-                      <span>By {blog.author}</span>
-                      <span>{blog.readTime} read</span>
+                    <div className="p-4 pt-0 border-t border-gray-50 dark:border-zinc-800 mt-2 flex justify-between items-center">
+                      <div className="text-[10px] text-gray-400 font-semibold">
+                        <span>By {blog.author}</span>
+                        <span className="mx-1.5">·</span>
+                        <span>{blog.readTime} read</span>
+                      </div>
+                      <button
+                        onClick={() => { setSelectedBlog(blog); setView('blog-detail'); }}
+                        className="text-[10px] font-bold text-[#0F6CBD] hover:underline flex items-center space-x-1"
+                      >
+                        <span>Read Article</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
                     </div>
                   </div>
                 ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* BLOG DETAIL VIEW */}
+          {currentView === 'blog-detail' && selectedBlog && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-6 max-w-3xl mx-auto"
+              id="view-blog-detail"
+            >
+              <button
+                onClick={() => setView('blog')}
+                className="text-xs font-bold text-[#0F6CBD] flex items-center space-x-1 hover:underline"
+              >
+                <ArrowRight className="w-3 h-3 rotate-180" />
+                <span>Back to Health Blog</span>
+              </button>
+
+              <div className="bg-white dark:bg-zinc-950 rounded-3xl overflow-hidden border border-gray-100 dark:border-zinc-900 shadow-sm">
+                {/* Hero Image */}
+                <div className="relative h-64 sm:h-80 overflow-hidden">
+                  <img
+                    src={selectedBlog.image}
+                    alt={selectedBlog.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <span className="bg-[#22A06B] text-white text-[10px] font-bold px-3 py-1 rounded-full">
+                      {selectedBlog.category}
+                    </span>
+                    <h1 className="font-bold text-white text-xl sm:text-2xl leading-tight mt-3">
+                      {selectedBlog.title}
+                    </h1>
+                  </div>
+                </div>
+
+                {/* Article Meta */}
+                <div className="px-6 py-4 border-b border-gray-100 dark:border-zinc-800 flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center space-x-1.5">
+                    <User className="w-3.5 h-3.5 text-[#0F6CBD]" />
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">{selectedBlog.author}</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-[#22A06B]" />
+                    <span>{selectedBlog.date ? new Date(selectedBlog.date).toLocaleDateString('en-LK', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Recently Published'}</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5">
+                    <Clock className="w-3.5 h-3.5 text-amber-500" />
+                    <span>{selectedBlog.readTime} read</span>
+                  </div>
+                </div>
+
+                {/* Full Article Content */}
+                <div className="p-6 sm:p-8 space-y-5">
+                  <div className="prose prose-sm max-w-none">
+                    <p className="text-gray-700 dark:text-gray-300 text-sm leading-7">
+                      {selectedBlog.content}
+                    </p>
+                  </div>
+
+                  {/* Medical Disclaimer */}
+                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-start space-x-3">
+                    <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <div className="text-xs text-amber-800 dark:text-amber-300">
+                      <span className="font-bold block mb-0.5">Medical Disclaimer</span>
+                      This article is for general health education purposes only and does not constitute professional medical advice. Always consult a licensed pharmacist or physician before making medication decisions.
+                    </div>
+                  </div>
+
+                  {/* Author Bio */}
+                  <div className="bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl p-4 flex items-start space-x-3">
+                    <div className="w-10 h-10 rounded-full bg-[#0F6CBD] text-white flex items-center justify-center font-bold text-sm shrink-0">
+                      {selectedBlog.author?.charAt(0)}
+                    </div>
+                    <div>
+                      <span className="font-bold text-xs text-gray-800 dark:text-white block">{selectedBlog.author}</span>
+                      <span className="text-[10px] text-[#22A06B] font-semibold">Licensed SLMC Pharmacist — Kaithady MediCare Hub</span>
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">All health blog articles are reviewed and approved by our SLMC-licensed pharmacists before publication.</p>
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <button
+                      onClick={() => setView('shop')}
+                      className="bg-[#0F6CBD] text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-[#0c599c] transition"
+                    >
+                      Browse Related Medicines
+                    </button>
+                    <button
+                      onClick={() => setView('tele')}
+                      className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-gray-50 transition"
+                    >
+                      Consult a Pharmacist
+                    </button>
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}
@@ -1238,22 +1357,60 @@ export default function App() {
                 <h2 className="font-bold text-gray-900 dark:text-white text-2xl">{t.contactTitle}</h2>
                 <p className="text-xs text-gray-400">We're here to answer your clinical, prescription, and delivery queries</p>
               </div>
+
+              {/* Google Maps Embed */}
+              <div className="rounded-3xl overflow-hidden border border-gray-100 dark:border-zinc-900 shadow-sm">
+                <div className="bg-[#0F6CBD] px-4 py-3 flex items-center space-x-2">
+                  <MapPin className="w-4 h-4 text-white" />
+                  <span className="text-white font-bold text-xs">Kaithady MediCare Hub — Jaffna Hospital Road (Interactive Map)</span>
+                </div>
+                <iframe
+                  title="Kaithady MediCare Hub Location — Jaffna Hospital Road"
+                  src="https://maps.google.com/maps?q=Jaffna+Teaching+Hospital+Road+Sri+Lanka&output=embed&z=15"
+                  width="100%"
+                  height="320"
+                  style={{ border: 0, display: 'block' }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  aria-label="Interactive map showing Kaithady MediCare Hub location near Jaffna Teaching Hospital"
+                />
+                <div className="bg-white dark:bg-zinc-950 px-4 py-2.5 flex items-center justify-between">
+                  <span className="text-xs text-gray-500">Jaffna Hospital Road, Opposite Teaching Hospital, Jaffna 40000</span>
+                  <a
+                    href="https://maps.google.com/?q=Jaffna+Teaching+Hospital+Road+Sri+Lanka"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[10px] font-bold text-[#0F6CBD] hover:underline flex items-center space-x-1"
+                  >
+                    <span>Open in Maps</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </a>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-white dark:bg-zinc-950 p-6 rounded-3xl border border-gray-100 dark:border-zinc-900 space-y-4 text-xs">
                   <h3 className="font-bold text-sm text-[#0F6CBD]">Pharmacy Counter Location</h3>
                   <p className="text-gray-500">Jaffna Hospital Road, Jaffna, Sri Lanka (Opposite Teaching Hospital)</p>
                   <div className="space-y-2 pt-2 border-t">
-                    <p><strong>Hotline:</strong> +94 (21) 222-2222</p>
-                    <p><strong>WhatsApp:</strong> +94 (77) 123-4567</p>
-                    <p><strong>Email:</strong> support@gishor.com</p>
-                    <p><strong>Hours:</strong> Daily 07:30 AM - 10:00 PM</p>
+                    <p><strong className="text-gray-700 dark:text-gray-300">Hotline:</strong> <span className="text-gray-600 dark:text-gray-400">+94 (21) 222-2222</span></p>
+                    <p><strong className="text-gray-700 dark:text-gray-300">WhatsApp:</strong> <span className="text-gray-600 dark:text-gray-400">+94 (77) 123-4567</span></p>
+                    <p><strong className="text-gray-700 dark:text-gray-300">Email:</strong> <span className="text-gray-600 dark:text-gray-400">support@gishor.com</span></p>
+                    <p><strong className="text-gray-700 dark:text-gray-300">Hours:</strong> <span className="text-gray-600 dark:text-gray-400">Daily 07:30 AM - 10:00 PM</span></p>
+                  </div>
+                  {/* License Info */}
+                  <div className="bg-emerald-50 dark:bg-emerald-950/30 rounded-xl p-3 border border-emerald-100 dark:border-emerald-900">
+                    <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-1">Pharmacy Registration</p>
+                    <p className="text-xs text-gray-700 dark:text-gray-300 font-mono">SLMC-PHA-9842</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Pharmacist-in-Charge: Dr. K. Gnanapragasam</p>
                   </div>
                 </div>
                 <form onSubmit={(e) => { e.preventDefault(); alert("Thank you! Your message has been sent to our pharmacists."); }} className="bg-white dark:bg-zinc-950 p-6 rounded-3xl border border-gray-100 dark:border-zinc-900 space-y-3 text-xs">
                   <h3 className="font-bold text-sm text-gray-800 dark:text-white">Send Us a Message</h3>
-                  <input type="text" placeholder="Your Name" required className="w-full bg-gray-50 dark:bg-zinc-900 border rounded-xl px-3 py-2 text-xs" />
-                  <input type="email" placeholder="Your Email" required className="w-full bg-gray-50 dark:bg-zinc-900 border rounded-xl px-3 py-2 text-xs" />
-                  <textarea placeholder="Your Question or Inquiry..." required rows={3} className="w-full bg-gray-50 dark:bg-zinc-900 border rounded-xl px-3 py-2 text-xs resize-none" />
+                  <input type="text" placeholder="Your Name" required className="w-full bg-gray-50 dark:bg-zinc-900 border rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-200" />
+                  <input type="email" placeholder="Your Email" required className="w-full bg-gray-50 dark:bg-zinc-900 border rounded-xl px-3 py-2 text-xs text-gray-800 dark:text-gray-200" />
+                  <textarea placeholder="Your Question or Inquiry..." required rows={3} className="w-full bg-gray-50 dark:bg-zinc-900 border rounded-xl px-3 py-2 text-xs resize-none text-gray-800 dark:text-gray-200" />
                   <button type="submit" className="w-full bg-[#0F6CBD] text-white py-2.5 rounded-xl font-bold hover:bg-[#0c599c]">Send Message</button>
                 </form>
               </div>
@@ -1357,19 +1514,139 @@ export default function App() {
                 </p>
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100 dark:border-zinc-800 text-xs">
                   <div>
-                    <strong>Pharmacy License Number:</strong>
-                    <p className="text-gray-500 font-mono mt-0.5">SLMC-PHA-9842 (Jaffna Central)</p>
+                    <strong className="text-gray-700 dark:text-gray-200">Pharmacy License Number:</strong>
+                    <p className="text-gray-500 dark:text-gray-400 font-mono mt-0.5">SLMC-PHA-9842 (Jaffna Central)</p>
                   </div>
                   <div>
-                    <strong>Pharmacist in Charge:</strong>
-                    <p className="text-gray-500 mt-0.5">Dr. K. Gnanapragasam, B.Pharm</p>
+                    <strong className="text-gray-700 dark:text-gray-200">Pharmacist in Charge:</strong>
+                    <p className="text-gray-500 dark:text-gray-400 mt-0.5">Dr. K. Gnanapragasam, B.Pharm</p>
                   </div>
                 </div>
               </div>
             </motion.div>
           )}
 
-          {/* CART VIEW */}
+          {/* PRIVACY POLICY VIEW */}
+          {currentView === 'privacy' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6 max-w-3xl mx-auto" id="view-privacy">
+              <div className="bg-white dark:bg-zinc-950 p-8 rounded-3xl border border-gray-100 dark:border-zinc-900 space-y-5 text-xs leading-relaxed">
+                <div>
+                  <h2 className="font-bold text-gray-900 dark:text-white text-2xl">Privacy Policy</h2>
+                  <p className="text-gray-500 mt-1">Effective: January 1, 2026 • Kaithady MediCare Hub (Pvt) Ltd • Company Reg: PV-40592</p>
+                  <div className="mt-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900 rounded-xl p-3 text-xs text-blue-800 dark:text-blue-300">
+                    This Privacy Policy complies with Sri Lanka's <strong>Personal Data Protection Act No. 9 of 2022 (PDPA)</strong> and the guidelines issued by the Data Protection Authority of Sri Lanka.
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">1. Data Controller</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Kaithady MediCare Hub (Pvt) Ltd, Jaffna Hospital Road, Jaffna 40000, Sri Lanka. Data Protection Officer: Dr. K. Gnanapragasam (dpo@gishor.com). Pharmacy License: SLMC-PHA-9842.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">2. Information We Collect</h3>
+                  <ul className="list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1 mt-1">
+                    <li><strong className="text-gray-700 dark:text-gray-200">Identity Data:</strong> Full name, date of birth, NIC number (for prescription verification)</li>
+                    <li><strong className="text-gray-700 dark:text-gray-200">Contact Data:</strong> Phone number, email address, delivery address</li>
+                    <li><strong className="text-gray-700 dark:text-gray-200">Medical Data (Sensitive):</strong> Prescription images, diagnosed conditions, known drug allergies, medication history</li>
+                    <li><strong className="text-gray-700 dark:text-gray-200">Transaction Data:</strong> Order history, payment method (no card numbers stored)</li>
+                    <li><strong className="text-gray-700 dark:text-gray-200">Technical Data:</strong> IP address, browser type, and session logs for security purposes</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">3. How We Use Your Data</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Your data is used exclusively for: processing and delivering medicine orders, prescription verification by our licensed pharmacists, telepharmacy consultation, sending order status and refill reminders via WhatsApp/SMS, and complying with NMRA and SLMC regulatory requirements.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">4. Medical Data &amp; Sensitive Information</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Prescription images and medical records are classified as <strong>Sensitive Personal Data</strong> under the Sri Lanka PDPA. They are processed only by SLMC-licensed pharmacists and stored in encrypted, access-controlled servers. They are <strong>never</strong> shared with third-party advertisers or analytics services.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">5. Data Retention</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Order records are retained for 7 years as required by Sri Lanka's Medical Ordinance. Prescription images are retained for 3 years. Account data may be deleted upon written request unless retention is legally required.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">6. Your Rights Under PDPA 2022</h3>
+                  <ul className="list-disc pl-5 text-gray-600 dark:text-gray-300 space-y-1 mt-1">
+                    <li>Right to access your personal data</li>
+                    <li>Right to rectification of inaccurate data</li>
+                    <li>Right to erasure (where not legally prohibited)</li>
+                    <li>Right to restrict processing</li>
+                    <li>Right to data portability</li>
+                    <li>Right to object to automated decisions</li>
+                  </ul>
+                  <p className="text-gray-600 dark:text-gray-300 mt-2">To exercise these rights, email: <strong>dpo@gishor.com</strong> or call: +94 (21) 222-2222</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">7. Data Security</h3>
+                  <p className="text-gray-600 dark:text-gray-300">We implement SSL/TLS encryption for all data transfers, AES-256 encryption for stored medical records, PCI-DSS compliant payment processing, and regular security audits. No payment card details are stored on our servers.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">8. Contact &amp; Complaints</h3>
+                  <p className="text-gray-600 dark:text-gray-300">If you believe your privacy rights have been violated, you may lodge a complaint with the <strong>Data Protection Authority of Sri Lanka</strong> (www.dpa.gov.lk). For direct concerns: dpo@gishor.com</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* TERMS & CONDITIONS VIEW */}
+          {currentView === 'terms' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6 max-w-3xl mx-auto" id="view-terms">
+              <div className="bg-white dark:bg-zinc-950 p-8 rounded-3xl border border-gray-100 dark:border-zinc-900 space-y-5 text-xs leading-relaxed">
+                <div>
+                  <h2 className="font-bold text-gray-900 dark:text-white text-2xl">Terms &amp; Conditions</h2>
+                  <p className="text-gray-500 mt-1">Effective: January 1, 2026 • Kaithady MediCare Hub (Pvt) Ltd</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">1. Acceptance of Terms</h3>
+                  <p className="text-gray-600 dark:text-gray-300">By accessing and using the Kaithady MediCare Hub online platform, you accept and agree to be bound by these Terms &amp; Conditions and all applicable Sri Lankan laws, including the National Medicines Regulatory Authority (NMRA) Act and SLMC regulations.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">2. Medicine Ordering &amp; Prescription Requirements</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Prescription (Rx) medicines require a valid prescription signed by a registered medical practitioner in Sri Lanka. Submitting a fraudulent prescription is a criminal offence under the Poisons, Opium and Dangerous Drugs Ordinance. All prescriptions are verified by our SLMC-licensed pharmacist before dispatch.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">3. Product Availability &amp; Pricing</h3>
+                  <p className="text-gray-600 dark:text-gray-300">All prices are quoted in Sri Lankan Rupees (LKR) and are inclusive of applicable taxes. Prices may change without prior notice in accordance with NMRA-regulated pricing or manufacturer updates. We reserve the right to cancel orders if a product becomes unavailable.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">4. Delivery Terms</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Delivery is available within the Jaffna district. Estimated delivery times are indicative and may vary due to traffic, weather, or demand. For controlled medications, our delivery agent may request NIC verification and original prescription upon delivery.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">5. Payment</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Accepted payment methods: Cash on Delivery, Credit/Debit Cards (Visa/Mastercard), and Sri Lankan Mobile Wallets (mCash, eZ Cash). Card transactions are processed via PCI-DSS compliant payment gateways. We do not store card details.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">6. Medical Disclaimer &amp; Limitation of Liability</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Information provided on this platform, including AI-assisted content and blog articles, is for general educational purposes only and does not replace professional medical advice. Kaithady MediCare Hub is not liable for adverse outcomes resulting from self-medication without consulting a licensed healthcare provider.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-sm text-[#0F6CBD] mt-4">7. Governing Law</h3>
+                  <p className="text-gray-600 dark:text-gray-300">These Terms are governed by the laws of the Democratic Socialist Republic of Sri Lanka. Any disputes shall be subject to the exclusive jurisdiction of the courts of the Northern Province, Jaffna.</p>
+                </div>
+
+                <div className="pt-4 border-t border-gray-100 dark:border-zinc-800 text-gray-400">
+                  <p>Kaithady MediCare Hub (Pvt) Ltd • Reg. No: PV-40592 • SLMC License: SLMC-PHA-9842 • Jaffna, Sri Lanka</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+
           {currentView === 'cart' && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -1505,6 +1782,26 @@ export default function App() {
                           <MessageSquare className="w-4 h-4" />
                           <span>Order via WhatsApp Fast Pay</span>
                         </a>
+
+                        {/* Trust & Security Badges */}
+                        <div className="pt-3 border-t border-gray-100 dark:border-zinc-800 space-y-2">
+                          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider text-center">Secure & Licensed Checkout</p>
+                          <div className="flex flex-wrap gap-1.5 justify-center">
+                            <span className="flex items-center space-x-1 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 text-[9px] font-bold px-2 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                              <ShieldCheck className="w-3 h-3" />
+                              <span>SSL Secured</span>
+                            </span>
+                            <span className="flex items-center space-x-1 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 text-[9px] font-bold px-2 py-1 rounded-lg border border-blue-200 dark:border-blue-800">
+                              <CheckSquare className="w-3 h-3" />
+                              <span>PCI-DSS Compliant</span>
+                            </span>
+                            <span className="flex items-center space-x-1 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-400 text-[9px] font-bold px-2 py-1 rounded-lg border border-purple-200 dark:border-purple-800">
+                              <CheckCircle className="w-3 h-3" />
+                              <span>SLMC-9842</span>
+                            </span>
+                          </div>
+                          <p className="text-[9px] text-gray-400 text-center leading-relaxed">Your personal and payment data is encrypted and protected under Sri Lanka's Personal Data Protection Act (PDPA) 2022.</p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1764,6 +2061,35 @@ export default function App() {
 
       {/* FOOTER */}
       <Footer currentLang={currentLang} accessibility={accessibility} setView={setView} />
+
+      {/* CART ADDED TOAST NOTIFICATION */}
+      <AnimatePresence>
+        {cartToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.25 }}
+            className="fixed top-20 right-4 z-[10000] bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-800 shadow-xl rounded-2xl px-4 py-3 flex items-center space-x-3 max-w-xs"
+            role="status"
+            aria-live="polite"
+          >
+            <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
+              <CheckCircle className="w-4 h-4 text-[#22A06B]" />
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-[#22A06B] uppercase tracking-wider">Added to Cart</p>
+              <p className="text-xs font-semibold text-gray-800 dark:text-gray-200 line-clamp-1">{cartToast}</p>
+            </div>
+            <button
+              onClick={() => { setCartToast(null); setView('cart'); }}
+              className="ml-auto text-[9px] font-bold text-[#0F6CBD] hover:underline whitespace-nowrap"
+            >
+              View Cart
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* LOGIN & SIGNUP MODAL */}
       {showAuthModal && (

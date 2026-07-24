@@ -96,6 +96,26 @@ export default function Footer({ currentLang, accessibility, setView }: FooterPr
             </li>
             <li>
               <button 
+                onClick={() => setView('privacy')} 
+                className="hover:underline flex items-center space-x-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]"
+                aria-label="View Privacy Policy"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-[#22A06B]" aria-hidden="true" />
+                <span>Privacy Policy</span>
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => setView('terms')} 
+                className="hover:underline flex items-center space-x-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]"
+                aria-label="View Terms & Conditions"
+              >
+                <FileText className="w-3.5 h-3.5 text-[#22A06B]" aria-hidden="true" />
+                <span>Terms &amp; Conditions</span>
+              </button>
+            </li>
+            <li>
+              <button 
                 onClick={() => setView('faq')} 
                 className="hover:underline flex items-center space-x-1.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]"
                 aria-label="View Frequently Asked Questions"
@@ -124,18 +144,31 @@ export default function Footer({ currentLang, accessibility, setView }: FooterPr
           </h4>
           <ul className="space-y-2 text-sm text-gray-400">
             <li>
-              <strong>Pharmacist-in-Charge:</strong> <br />
+              <strong className="text-gray-300">Pharmacist-in-Charge:</strong> <br />
               Dr. K. Gnanapragasam, B.Pharm, SLMC-PHA-9842
             </li>
             <li>
-              <strong>Paediatric Consultant:</strong> <br />
+              <strong className="text-gray-300">Paediatric Consultant:</strong> <br />
               Ms. Ahilya Selvam, D.Pharm, SLMC-PHA-1045
             </li>
             <li>
-              <strong>Emergency Dispatch:</strong> <br />
+              <strong className="text-gray-300">Emergency Dispatch:</strong> <br />
               +94 (21) 222-2222
             </li>
           </ul>
+          {/* Trust Badges */}
+          <div className="flex flex-wrap gap-2 pt-2">
+            <span className="bg-emerald-900/40 border border-emerald-700/50 text-emerald-400 text-[9px] font-bold px-2 py-1 rounded-lg flex items-center space-x-1">
+              <ShieldCheck className="w-3 h-3" aria-hidden="true" />
+              <span>SSL Secured</span>
+            </span>
+            <span className="bg-blue-900/40 border border-blue-700/50 text-blue-400 text-[9px] font-bold px-2 py-1 rounded-lg">
+              PCI-DSS
+            </span>
+            <span className="bg-purple-900/40 border border-purple-700/50 text-purple-400 text-[9px] font-bold px-2 py-1 rounded-lg">
+              NMRA ✓
+            </span>
+          </div>
         </div>
 
         {/* Social Links & WhatsApp Fast Order */}
@@ -184,17 +217,23 @@ export default function Footer({ currentLang, accessibility, setView }: FooterPr
           <strong>{t.disclaimerLabel.toUpperCase()}:</strong> {t.warningBanner}
         </p>
         <div className="flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-2 text-[11px]">
-          <span>© 2026 Kaithady MediCare Hub (Pvt) Ltd. All Rights Reserved. Reg No: PV-40592. Jaffna Sri Lanka.</span>
-          <div className="flex flex-wrap justify-center space-x-4">
-            <button onClick={() => setView('privacy')} className="hover:underline cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]">Privacy Policy</button>
-            <span>•</span>
-            <button onClick={() => setView('refund-policy')} className="hover:underline cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]">Refund Policy</button>
-            <span>•</span>
-            <button onClick={() => setView('delivery-policy')} className="hover:underline cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]">Delivery Policy</button>
-            <span>•</span>
+          <span className="text-gray-400">© 2026 Kaithady MediCare Hub (Pvt) Ltd. All Rights Reserved. Reg No: PV-40592. Jaffna Sri Lanka.</span>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
+            <button onClick={() => setView('privacy')} className="hover:underline cursor-pointer text-gray-400 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]">Privacy Policy</button>
+            <span className="text-gray-700">•</span>
+            <button onClick={() => setView('terms')} className="hover:underline cursor-pointer text-gray-400 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]">Terms &amp; Conditions</button>
+            <span className="text-gray-700">•</span>
+            <button onClick={() => setView('refund-policy')} className="hover:underline cursor-pointer text-gray-400 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]">Refund Policy</button>
+            <span className="text-gray-700">•</span>
+            <button onClick={() => setView('delivery-policy')} className="hover:underline cursor-pointer text-gray-400 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22A06B]">Delivery Policy</button>
+            <span className="text-gray-700">•</span>
             <span className="text-red-400 font-bold">Emergency Ambulance: 1990</span>
           </div>
         </div>
+        {/* PDPA Compliance Notice */}
+        <p className="text-center text-[10px] text-gray-600 border-t border-gray-800 pt-3">
+          🔒 Protected under Sri Lanka's <strong className="text-gray-500">Personal Data Protection Act No. 9 of 2022</strong>. Medical data handled exclusively by SLMC-licensed pharmacists.
+        </p>
       </div>
     </footer>
   );
